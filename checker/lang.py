@@ -13,6 +13,9 @@ _HI_LATN = {
     "beta", "aaj", "jaldi", "bhejo", "bhej", "batao", "batayein", "wala", "wali", "liye", "mein", "kal", "ho",
     "raha", "rahi", "hoon", "mat", "kar", "diya", "diye", "lena", "dena", "bol", "yeh", "ye", "woh", "kuch",
     "sirf", "milega", "milenge", "lagao", "kamao", "chahiye", "dunga", "baje", "pe", "par", "se", "ko",
+    "tak", "jaunga", "jayega", "jayegi", "bhaiya", "rakhna", "khula", "karna", "karke", "hum", "mujhe", "tujhe",
+    "tumhe", "accha", "acha", "theek", "thik", "bas", "kyun", "kaise", "kahan", "yahan", "wahan", "aaya", "aayi",
+    "lekin", "aur", "haan", "bhi", "tha", "thi", "lijiye", "dijiye", "bataiye", "kijiye", "hoga", "dekh", "pahunch",
 }
 _BN_LATN = {
     "ami", "tumi", "apni", "apnar", "amar", "tomar", "korun", "koro", "kore", "korte", "hobe", "hoye", "achhe",
@@ -20,6 +23,8 @@ _BN_LATN = {
     "theke", "jonno", "shathe", "sathe", "debo", "dibo", "paben", "kemon", "holo", "geche", "gechi", "bolchi",
     "thakun", "din", "nite", "pete", "eta", "ota", "ei", "oi", "kal", "aaj", "ajke", "ajkei", "porechi",
     "bari", "barite", "jabo", "ashbe", "ashben", "hoyeche", "hoyechen", "korechi", "mash", "chhar", "lagbe",
+    "tor", "tui", "jabe", "korbe", "parle", "eso", "ashbo", "kheye", "boshe", "achi", "kache", "firiye", "bolbo",
+    "bolche", "bolchhe", "dekho", "janash", "kinte", "chole", "sondhebela", "jachhi", "pouchhe", "kheyecho",
 }
 _WORD_RE = re.compile(r"[a-z]+")
 

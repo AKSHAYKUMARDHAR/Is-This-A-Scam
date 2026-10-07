@@ -4,8 +4,10 @@
 2. Too little text, or no model answer, is "unsure".
 3. Self-consistency: every sample must agree on the label, otherwise "unsure" (rule 2).
 4. Agreement still needs mean confidence at or above a threshold chosen on the golden set (rule 3).
-5. "no_signs" is also blocked by any strong rule signal or a payment screenshot, so a message with a
-   real warning sign is never cleared.
+5. "no_signs" is also blocked by any strong rule signal, so a message with a real warning sign is
+   never cleared.
+6. A payment-confirmation screenshot is always "unsure" unless a hard flag fires: a screenshot can
+   neither prove nor disprove a payment, so the answer is to check your own UPI app.
 """
 from collections import Counter
 from dataclasses import dataclass
@@ -53,6 +55,9 @@ def decide(rules: RuleResult, samples: list[dict], *, input_ok: bool = True, scr
         return Decision("scam", "hard_flag", scam_type)
     if not input_ok:
         return Decision("unsure", "too_short", None)
+    if screen_kind == "payment_confirmation":
+        # PRD: a screenshot can never prove (or disprove) a payment; the answer is "check your own app".
+        return Decision("unsure", "payment_screenshot", "fake_payment")
     if not samples:
         return Decision("unsure", "model_unavailable", None)
 
@@ -68,8 +73,6 @@ def decide(rules: RuleResult, samples: list[dict], *, input_ok: bool = True, scr
     if label == "genuine":
         if rules.strong:
             return Decision("unsure", "strong_signal", rules.type_hint, mean)
-        if screen_kind == "payment_confirmation":
-            return Decision("unsure", "payment_screenshot", "fake_payment", mean)
         if mean >= t_gen:
             return Decision("no_signs", "agreement", None, mean)
         return Decision("unsure", "low_confidence", None, mean)

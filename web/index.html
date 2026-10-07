@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Is This a Scam? Scam checker for India</title>
+  <meta name="description" content="Check a suspicious message, screenshot or phone call in Hindi, Bengali or English. Get a clear verdict, the red flags and what to do next.">
+  <meta name="theme-color" content="#1f2a44">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&family=Noto+Sans+Bengali:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-row">
+      <a class="brand" href="/" aria-label="Is This a Scam? home">
+        <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Z" fill="currentColor"/><path d="M11 7h2v6h-2zm0 8h2v2h-2z" fill="var(--bg)"/></svg>
+        <span data-i18n="title">Is This a Scam?</span>
+      </a>
+      <div class="langs" role="group" aria-label="Language">
+        <button type="button" data-lang="en" lang="en">EN</button>
+        <button type="button" data-lang="hi" lang="hi">हिंदी</button>
+        <button type="button" data-lang="bn" lang="bn">বাংলা</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <p class="tagline" data-i18n="tagline"></p>
+
+    <button type="button" class="urgent-btn" id="urgentBtn">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 15h-2v-2h2v2Zm0-4h-2V7h2v6Z" fill="currentColor"/></svg>
+      <span data-i18n="urgent_btn"></span>
+    </button>
+
+    <section class="panel urgent" id="urgentPanel" hidden aria-live="polite">
+      <h2 data-i18n="urgent_title"></h2>
+      <ol id="urgentSteps"></ol>
+      <div class="row">
+        <a class="btn danger" href="tel:1930" data-i18n="call_1930"></a>
+        <a class="btn ghost" href="https://cybercrime.gov.in" target="_blank" rel="noopener" data-i18n="report_online"></a>
+      </div>
+      <button type="button" class="link" id="urgentClose" data-i18n="close"></button>
+    </section>
+
+    <section class="panel" id="formPanel">
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" id="tabMsg" aria-selected="true" aria-controls="paneMsg" data-i18n="tab_message"></button>
+        <button type="button" role="tab" id="tabCall" aria-selected="false" aria-controls="paneCall" data-i18n="tab_call"></button>
+      </div>
+
+      <div id="paneMsg" role="tabpanel" aria-labelledby="tabMsg">
+        <label for="msg" class="label" data-i18n="paste_label"></label>
+        <textarea id="msg" rows="6" maxlength="2000" data-i18n-placeholder="paste_placeholder"></textarea>
+        <div class="counter"><span id="count">0</span>/2000</div>
+        <div class="upload">
+          <label class="upload-label" for="file">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 5H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm-11 3a2 2 0 1 1 0 4 2 2 0 0 1 0-4Zm-3 9 4-5 3 3.5 2.5-3L19 17H5Z" fill="currentColor"/></svg>
+            <span data-i18n="or_upload"></span>
+          </label>
+          <input type="file" id="file" accept="image/png,image/jpeg,image/webp">
+          <p class="hint" data-i18n="upload_hint"></p>
+          <div class="preview" id="preview" hidden>
+            <img id="previewImg" alt="">
+            <button type="button" class="link" id="removeImg" data-i18n="remove"></button>
+          </div>
+        </div>
+      </div>
+
+      <div id="paneCall" role="tabpanel" aria-labelledby="tabCall" hidden>
+        <fieldset><legend data-i18n="q_claimed"></legend><div class="chips" data-q="claimed" data-mode="single"></div></fieldset>
+        <fieldset><legend data-i18n="q_asked"></legend><div class="chips" data-q="asked" data-mode="multi"></div></fieldset>
+        <fieldset><legend data-i18n="q_threat"></legend><div class="chips" data-q="threat" data-mode="single"></div></fieldset>
+        <fieldset><legend data-i18n="q_video"></legend><div class="chips" data-q="video_or_secret" data-mode="bool"></div></fieldset>
+        <fieldset><legend data-i18n="q_safe"></legend><div class="chips" data-q="safe_account" data-mode="bool"></div></fieldset>
+        <label for="details" class="label" data-i18n="details_label"></label>
+        <textarea id="details" rows="3" maxlength="2000" data-i18n-placeholder="details_placeholder"></textarea>
+      </div>
+
+      <p class="error" id="formError" role="alert" hidden></p>
+      <button type="button" class="btn primary big" id="checkBtn" data-i18n="check_btn"></button>
+      <p class="note" id="noModel" hidden data-i18n="no_model"></p>
+    </section>
+
+    <section class="panel loading" id="loading" hidden aria-live="polite">
+      <div class="spinner" aria-hidden="true"></div>
+      <p data-i18n="checking"></p>
+    </section>
+
+    <section id="result" hidden aria-live="polite"></section>
+
+    <footer class="foot">
+      <p data-i18n="privacy"></p>
+      <p><a href="https://github.com/AKSHAYKUMARDHAR/Is-This-A-Scam#results" target="_blank" rel="noopener" data-i18n="how_it_works"></a></p>
+    </footer>
+  </main>
+
+  <template id="cardTpl">
+    <article class="card">
+      <div class="verdict">
+        <svg class="verdict-icon" viewBox="0 0 24 24" aria-hidden="true"></svg>
+        <div>
+          <p class="verdict-label"></p>
+          <p class="verdict-type"></p>
+        </div>
+      </div>
+      <div class="explain">
+        <p class="summary"></p>
+        <div class="flags-block"><h3 class="flags-title"></h3><ul class="flags"></ul></div>
+        <div class="genuine-block"><h3 class="genuine-title"></h3><ul class="genuine"></ul></div>
+      </div>
+      <div class="steps-block"><h3 class="steps-title"></h3><ol class="steps"></ol></div>
+      <div class="verify-block"><h3 class="verify-title"></h3><p class="verify"></p></div>
+      <p class="disclaimer"></p>
+      <div class="actions">
+        <button type="button" class="btn whatsapp share"></button>
+        <div class="feedback">
+          <p class="fb-q helpful-q"></p>
+          <div class="row"><button type="button" class="btn ghost small fb" data-event="helpful"></button><button type="button" class="btn ghost small fb" data-event="not_helpful"></button></div>
+          <p class="fb-q stopped-q"></p>
+          <div class="row"><button type="button" class="btn ghost small fb" data-event="stopped_me"></button></div>
+          <button type="button" class="link fb wrong" data-event="wrong_verdict"></button>
+          <p class="thanks" hidden></p>
+        </div>
+        <button type="button" class="btn ghost again"></button>
+      </div>
+    </article>
+  </template>
+
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
