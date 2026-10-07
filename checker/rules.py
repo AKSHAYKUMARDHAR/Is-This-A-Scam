@@ -229,7 +229,7 @@ _PAY_FOR = rx(r"(?:(?:₹|\brs\.?)\s?[\d०-९০-৯][\d,.०-९০-৯]*|[\d
               r"देने|दें|दे\s*दो|दीजिए|देना|দিলে|দিন|দাও|দিয়ে|দেবেন|দিতে)|"
               r"(?:पैसा|पैसे|रुपये|টাকা|\bpaisa\b|\bpaise\b|\btaka\b)\s*(?:पहले|\bpehle\b|আগে|\bage\b)")
 ASK_LINK = rx(r"\b(?:link|click|tap\s+(?:here|on|the))\b|लिंक|क्लिक|লিঙ্ক|লিংক|ক্লিক")
-_MASKED_PHONE = rx(r"(?<![\w])(?:\+?91[\s-]?)?[6-9]\d{3,7}[x×*]{2,}")
+_MASKED_PHONE = rx(r"(?<![\w])(?:\+?91[\s-]?)?[6-9]\d{3,7}[x×*]{2,}|\[phone\]")   # "[PHONE]": a number masked in real messages
 _TOLL_FREE = rx(r"\b1[89]00[\s-]?\d{3}[\s-]?\d{3,4}\b|\b1800[\s-]?\d{4,7}\b")
 _DETAIL = rx(r"\b(?:aadhaa?r|pan|kyc|card\s+(?:number|details|no)|cvv|bank\s+(?:details|account)|account\s+(?:number|details|no)|"
              r"date\s+of\s+birth|dob|password|login|net\s*banking|payment\s+details|personal\s+details|card\s+details)\b|"
