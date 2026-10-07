@@ -1,7 +1,7 @@
 """Verdict policy and the end-to-end pipeline, with a scripted model."""
 import asyncio
 
-from checker import policy, rules
+from checker import config, policy, rules
 from checker.llm import FakeProvider, LLMError
 from checker.pipeline import CheckInput, run_check
 
@@ -45,16 +45,29 @@ def test_bad_model_answers_are_ignored():
     assert policy.clean_sample({"label": "scam", "confidence": 3})["confidence"] == 1.0
 
 
-def test_agreement_runs_three_samples():
+def test_agreement_runs_all_samples():
     card, trace, provider = run(BILL, [GENUINE])
-    assert card["verdict"] == "no_signs" and provider.calls == 3
+    assert card["verdict"] == "no_signs" and provider.calls == config.SAMPLES
     assert card["red_flags"] == [] and card["genuine_signs"]
+    card, _ = asyncio.run(run_check(CheckInput(kind="text", text=BILL), FakeProvider([GENUINE]), samples=3))
+    assert card["verdict"] == "no_signs"
+
+
+def test_delivery_otp_is_capped_at_cant_tell():
+    text = "আপনার পার্সেল আজ ডেলিভারি হবে। ডেলিভারি এজেন্টকে OTP ৮১২০ জানান। -Ekart"
+    card, _, _ = run(text, [SCAM])
+    assert card["verdict"] == "unsure" and card["reason"] == "known_genuine_pattern"
+    card, _, _ = run(text, [GENUINE])
+    assert card["verdict"] == "no_signs"
+    # A caller who wants the "delivery" OTP is not exempt
+    assert "asks_secret" in rules.scan("Our delivery agent will call you, tell him the OTP on the phone").codes("hard")
 
 
 def test_disagreement_stops_after_two_calls():
     card, trace, provider = run(BILL, [GENUINE, SCAM])
     assert card["verdict"] == "unsure" and card["reason"] == "disagreement"
     assert provider.calls == 2
+    assert card["summary"] == card["headline"]      # never one run's confident summary on a "Can't tell" card
 
 
 def test_hallucinated_quotes_are_dropped():

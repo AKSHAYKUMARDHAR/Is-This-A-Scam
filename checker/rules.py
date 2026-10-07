@@ -57,9 +57,12 @@ _NEG = [
 ]
 _AWARE = rx(
     r"\b(beware|never|nobody|no\s+such\s+thing|nothing\s+called|is\s+a\s+(?:scam|fraud)|fraud\s+alert|stay\s+alert|"
-    r"advisory|savdhan|kabhi\s+nahi)\b|cybercrime\.gov\.in|1930|सावधान|धोखा|कोई\s*चीज\s*नहीं|कभी|नहीं\s*(?:करते|करती|होती)|"
-    r"সতর্ক|কখনও|করে\s*না|১৯৩০"
+    r"advisory|savdhan|kabhi\s+nahi|busted|racket|gang|accused)\b|cybercrime\.gov\.in|1930|सावधान|धोखा|कोई\s*चीज\s*नहीं|कभी|"
+    r"नहीं\s*(?:करते|करती|होती)|गिरोह|ठग|সতর্ক|কখনও|করে\s*না|১৯৩০|চক্র|প্রতারক"
 )
+# Genuine products quote yearly rates ("7.25% p.a."); scams quote daily, weekly or monthly ones.
+_YEARLY_PRODUCT = rx(r"\bp\.?\s?a\b\.?|per\s+annum|per\s+year|annual\w*|\bfd\b|fixed\s+deposit|\blic\b|insurance|policy|"
+                     r"प्रति\s*वर्ष|सालाना|बीमा|পলিসি|বার্ষিক|বিমা")
 
 
 def _negated(text: str, start: int, end: int, before: int = 45, after: int = 30) -> bool:
@@ -258,7 +261,10 @@ def scan(text: str, call: dict | None = None) -> RuleResult:
         res.hard.append(Flag("injection", inj))
 
     m = _first(SECRET, t)
-    if m and not (_DELIVERY_CTX.search(t) and not _CALL_CTX.search(t)):
+    if m and _DELIVERY_CTX.search(t) and not _CALL_CTX.search(t):
+        # Delivery and ride OTPs are meant to be given to the agent at the door: a known genuine pattern.
+        res.genuine.append(Flag("delivery_otp", _q(m)))
+    elif m:
         res.hard.append(Flag("asks_secret", _q(m)))
     if (m := _first(PIN_RECEIVE, t, neg=False, aware=True)):
         res.hard.append(Flag("pin_to_receive", _q(m)))
@@ -278,7 +284,7 @@ def scan(text: str, call: dict | None = None) -> RuleResult:
         res.hard.append(Flag("official_fee_personal_upi", personal_upis[0]))
     if _TONIGHT.search(t) and (m := _first(POWER_CUT, t, neg=False, aware=True)):
         res.hard.append(Flag("power_cut_threat", _q(m)))
-    if (m := _first(GUARANTEED, t, neg=False, aware=True)):
+    if not _YEARLY_PRODUCT.search(t) and (m := _first(GUARANTEED, t, neg=False, aware=True)):
         res.hard.append(Flag("guaranteed_returns", _q(m)))
     if (m := _first(TASK, t, neg=False, aware=True)) and _EARN.search(t):
         res.hard.append(Flag("task_scam", _q(m)))

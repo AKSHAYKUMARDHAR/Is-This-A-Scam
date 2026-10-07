@@ -1,0 +1,88 @@
+version C on golden (200 rows, gemini-3.1-flash-lite, prompt v1-eea18f5a)
+  20/200
+  40/200
+  60/200
+  80/200
+  100/200
+  120/200
+  140/200
+  160/200
+
+  stopped: Gemini daily quota exhausted for gemini-3.1-flash-lite
+  180/200
+  200/200
+  20/200
+  40/200
+  60/200
+  80/200
+  100/200
+  120/200
+  140/200
+  160/200
+
+  stopped: Gemini daily quota exhausted for gemini-3.1-flash-lite
+  180/200
+
+  stopped: Gemini daily quota exhausted for gemini-3.1-flash-lite
+
+  stopped: Gemini daily quota exhausted for gemini-3.1-flash-lite
+
+  stopped: Gemini daily quota exhausted for gemini-3.1-flash-lite
+  200/200
+  20/200
+  40/200
+  60/200
+  80/200
+  100/200
+  120/200
+  140/200
+  160/200
+  180/200
+  200/200
+
+golden: 200 rows  (INCOMPLETE: stopped on quota, re-run to resume)
+ver    n |  false al.  cleared  caught% genuine clr%  amb ct%  cant%  type%
+A    200 |       0/90     0/85     43.5          0.0    100.0   81.5  100.0
+B    165 |       1/80     0/85    100.0         96.2     None    1.2   98.8
+C    165 |       1/80     0/85    100.0         96.2     None    1.2   98.8
+
+version C: 421 model calls (2.55 per check), 0 errors, 353,640 input + 65,265 output tokens; false alarms by language {'bn': 1}
+third run: {'first_two_agreed': 128, 'third_disagreed': 0}
+verdict reasons: {'hard_flag': 37, 'agreement': 126, 'model_unsure': 2}
+
+Threshold sweep, version C (rows decided by a hard flag are unaffected)
+ scam_t  gen_t | false_al% cleared%  caught% gen_clr%  amb_ct%  cant%
+   0.50   0.60 |       1.2      0.0    100.0     96.2     None    1.2
+   0.50   0.70 |       1.2      0.0    100.0     96.2     None    1.2
+   0.50   0.80 |       1.2      0.0    100.0     96.2     None    1.2
+   0.50   0.85 |       1.2      0.0    100.0     96.2     None    1.2
+   0.50   0.90 |       1.2      0.0    100.0     91.2     None    3.6
+   0.50   0.95 |       1.2      0.0    100.0     40.0     None   28.5
+   0.60   0.60 |       1.2      0.0    100.0     96.2     None    1.2
+   0.60   0.70 |       1.2      0.0    100.0     96.2     None    1.2
+   0.60   0.80 |       1.2      0.0    100.0     96.2     None    1.2
+   0.60   0.85 |       1.2      0.0    100.0     96.2     None    1.2
+   0.60   0.90 |       1.2      0.0    100.0     91.2     None    3.6
+   0.60   0.95 |       1.2      0.0    100.0     40.0     None   28.5
+   0.70   0.60 |       1.2      0.0    100.0     96.2     None    1.2
+   0.70   0.70 |       1.2      0.0    100.0     96.2     None    1.2
+   0.70   0.80 |       1.2      0.0    100.0     96.2     None    1.2
+   0.70   0.85 |       1.2      0.0    100.0     96.2     None    1.2
+   0.70   0.90 |       1.2      0.0    100.0     91.2     None    3.6
+   0.70   0.95 |       1.2      0.0    100.0     40.0     None   28.5
+   0.80   0.60 |       1.2      0.0    100.0     96.2     None    1.2
+   0.80   0.70 |       1.2      0.0    100.0     96.2     None    1.2
+   0.80   0.80 |       1.2      0.0    100.0     96.2     None    1.2
+   0.80   0.85 |       1.2      0.0    100.0     96.2     None    1.2
+   0.80   0.90 |       1.2      0.0    100.0     91.2     None    3.6
+   0.80   0.95 |       1.2      0.0    100.0     40.0     None   28.5
+   0.90   0.60 |       1.2      0.0    100.0     96.2     None    1.2
+   0.90   0.70 |       1.2      0.0    100.0     96.2     None    1.2
+   0.90   0.80 |       1.2      0.0    100.0     96.2     None    1.2
+   0.90   0.85 |       1.2      0.0    100.0     96.2     None    1.2
+   0.90   0.90 |       1.2      0.0    100.0     91.2     None    3.6
+   0.90   0.95 |       1.2      0.0    100.0     40.0     None   28.5
+
+Errors (false alarm, scam cleared, or wrong type):
+   ('G084', 'scam', 'other', 'scam', 'investment', 'agreement', [('scam', 1.0), ('scam', 1.0), ('scam', 1.0)])
+   ('G113', 'genuine', None, 'scam', 'parcel', 'agreement', [('scam', 0.95), ('scam', 0.95), ('scam', 0.95)])

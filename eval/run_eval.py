@@ -191,11 +191,21 @@ def main(argv=None) -> int:
     ap.add_argument("--gate", action="store_true", help="print the PRD release gate for version C")
     ap.add_argument("--offline", action="store_true", help="use cached model answers only")
     ap.add_argument("--limit", type=int)
+    ap.add_argument("--ids", help="comma-separated ids or ranges, e.g. G166-G200,G089")
     ap.add_argument("--note", default="")
     args = ap.parse_args(argv)
     sys.stdout.reconfigure(encoding="utf-8")
 
     rows = [json.loads(line) for line in open(args.path, encoding="utf-8")]
+    if args.ids:
+        wanted = set()
+        for part in args.ids.split(","):
+            if "-" in part:
+                lo, hi = part.split("-")
+                wanted |= {f"{lo[0]}{n:03d}" for n in range(int(lo[1:]), int(hi[1:]) + 1)}
+            else:
+                wanted.add(part.strip())
+        rows = [r for r in rows if r["id"] in wanted]
     if args.limit:
         rows = rows[: args.limit]
     set_name = pathlib.Path(args.path).stem

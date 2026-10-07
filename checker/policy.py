@@ -8,6 +8,8 @@
    never cleared.
 6. A payment-confirmation screenshot is always "unsure" unless a hard flag fires: a screenshot can
    neither prove nor disprove a payment, so the answer is to check your own UPI app.
+7. A known genuine pattern (a delivery or ride OTP for the agent at the door, with no call involved)
+   caps a model-only "scam" at "unsure". It never clears a message.
 """
 from collections import Counter
 from dataclasses import dataclass
@@ -66,6 +68,10 @@ def decide(rules: RuleResult, samples: list[dict], *, input_ok: bool = True, scr
     if len(labels) > 1:
         return Decision("unsure", "disagreement", _model_type(samples), mean)
     label = labels.pop()
+    if label == "scam" and "delivery_otp" in rules.codes("genuine") and not rules.strong:
+        # Golden v1's only false alarm: a delivery OTP for the agent at the door, called a scam by the
+        # model. The rules know this genuine pattern, so the model alone can't call it a scam.
+        return Decision("unsure", "known_genuine_pattern", None, mean)
     if label == "scam":
         if mean >= t_scam:
             return Decision("scam", "agreement", _model_type(samples) or rules.type_hint or "other", mean)

@@ -76,6 +76,8 @@ def test_hard_flags_fire(text, code):
     "Address confirm karne ke liye apna pin code batayein.",
     "CESC: Scheduled power maintenance in your area on 08-10-2026 from 10 AM to 2 PM.",
     "Hi Akash, there is no fee at any stage of our hiring process.",
+    "LIC's new plan offers guaranteed returns of 7% p.a. for 15 years. Visit your nearest branch.",
+    "Mumbai: Police bust gang running a digital arrest racket, 5 accused arrested.",
 ])
 def test_no_hard_flag_on_genuine(text):
     assert hard(text) == []
