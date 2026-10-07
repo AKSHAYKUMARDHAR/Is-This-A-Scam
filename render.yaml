@@ -1,13 +1,15 @@
-# One-click deploy on Render (free plan): New > Blueprint > pick this repo, then paste GEMINI_API_KEY.
+# One-click deploy on Render (free plan): use the "Deploy to Render" button in the README,
+# sign in with GitHub, paste GEMINI_API_KEY, and press Apply.
 services:
   - type: web
     name: is-this-a-scam
     runtime: docker
     plan: free
+    region: singapore          # closest Render region to India
     healthCheckPath: /healthz
     envVars:
       - key: GEMINI_API_KEY
-        sync: false
+        sync: false            # Render asks for this value when you deploy
       - key: GEMINI_MODEL
         value: gemini-3.5-flash-lite
       - key: GEMINI_RPM

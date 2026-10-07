@@ -215,10 +215,16 @@ python -m eval.run_eval eval/data/holdout.jsonl --gate --offline                
 
 ## Deploy
 
-`render.yaml` deploys the Docker image to Render's free plan: New > Blueprint > this repo, then paste
-`GEMINI_API_KEY`. `/api/stats` is protected by a generated `STATS_TOKEN` (send it as `X-Stats-Token`).
-The free plan's disk is not persistent, so the event log resets on restart; attach a disk or a
-database before relying on the launch metrics.
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/AKSHAYKUMARDHAR/Is-This-A-Scam)
+
+`render.yaml` deploys the Docker image to Render's free plan in Singapore (the closest region to
+India): press the button, sign in with GitHub, paste `GEMINI_API_KEY`, and press Apply. The image is
+tested locally with Render's `PORT` convention.
+
+- The free plan sleeps after 15 minutes without traffic; the first visit after that takes about a minute.
+- `/api/stats` is protected by a generated `STATS_TOKEN` (send it as `X-Stats-Token`).
+- The free plan's disk is not persistent, so the event log resets on restart; attach a disk or a
+  database before relying on the launch metrics.
 
 ## API
 
