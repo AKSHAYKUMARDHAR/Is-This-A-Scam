@@ -7,6 +7,10 @@ running all three, at about two thirds of the cost on ambiguous messages.
 Messages with a hard rule flag still get one model call, for the scam type and an explanation in
 the user's language; the verdict does not depend on it. Messages with an injection attempt are
 never shown to the model at all.
+
+When a link checker is passed (Google Safe Browsing, in production when its key is set), a link on
+its list adds the hard flag "known_bad_link". The eval runs without it, so its numbers don't depend
+on a live service.
 """
 import asyncio
 import re
@@ -18,7 +22,7 @@ from . import advice, config, lang as langmod, masking, policy, rules
 from .llm import LLMError, Provider, QuotaExhausted
 from .prompts import user_message
 from .taxonomy import HEADLINES, LANGS, TYPE_LABELS, VERDICT_LABELS
-from .text_utils import norm
+from .text_utils import norm, urls
 
 CLAIMED = {
     "police_cbi_customs": "police, CBI, customs, ED or a court", "bank_rbi": "a bank or RBI",
@@ -168,7 +172,7 @@ def build_card(decision: policy.Decision, rule_res: rules.RuleResult, samples: l
 
 
 async def run_check(inp: CheckInput, provider: Provider | None, *, samples: int | None = None,
-                    explain_hard: bool = True) -> tuple[dict, CheckTrace]:
+                    explain_hard: bool = True, link_checker=None) -> tuple[dict, CheckTrace]:
     """Returns (card, trace). Raises QuotaExhausted only from the model layer; everything else degrades to "Can't tell"."""
     started = time.monotonic()
     trace = CheckTrace()
@@ -202,6 +206,10 @@ async def run_check(inp: CheckInput, provider: Provider | None, *, samples: int 
     detected = langmod.detect(raw)
     out_lang = inp.ui_lang if inp.ui_lang in LANGS else langmod.base(detected)
     rule_res = rules.scan(raw, call)
+    links = [full for _, full in urls(raw)]
+    if link_checker and links and (bad := await link_checker.bad_links(links)):
+        rule_res.hard.append(rules.Flag("known_bad_link", next((u for u in links if bad[0].endswith(u)), "")))
+        rule_res.type_hint = rule_res.type_hint or rules.guess_type(raw)
     input_ok = inp.kind == "call" or _enough_text(raw)
     masked, _ = masking.mask(model_text)
     prompt = user_message(masked, inp.kind, out_lang, screen_kind)

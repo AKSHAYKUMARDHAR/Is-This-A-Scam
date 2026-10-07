@@ -5,4 +5,5 @@ python-dotenv
 anthropic>=1.0          # Claude path (optional): structured outputs via output_config
 google-genai>=2.26      # Gemini path: free tier, used for the published eval runs
 pytest
-httpx                   # FastAPI TestClient
+httpx                   # FastAPI TestClient; Google Safe Browsing (optional)
+psycopg[binary]>=3.2    # Postgres event log (optional: only used when DATABASE_URL is set)

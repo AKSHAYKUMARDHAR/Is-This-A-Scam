@@ -182,6 +182,9 @@ FLAG_WHY = {
     "withdrawal_fee": {"en": "Asks you to pay a tax or fee before you can withdraw your money. Real platforms deduct charges; they don't ask for deposits.",
                        "hi": "पैसे निकालने से पहले टैक्स या फीस भरने को कहता है। असली प्लेटफॉर्म चार्ज काट लेते हैं, जमा नहीं करवाते।",
                        "bn": "টাকা তোলার আগে ট্যাক্স বা ফি দিতে বলে। আসল প্ল্যাটফর্ম চার্জ কেটে নেয়, জমা করায় না।"},
+    "known_bad_link": {"en": "This link is on Google's list of known phishing or malware sites. Don't open it.",
+                       "hi": "यह लिंक Google की धोखाधड़ी (फ़िशिंग) या मैलवेयर वाली साइटों की सूची में है। इसे न खोलें।",
+                       "bn": "এই লিঙ্কটি Google-এর প্রতারণা (ফিশিং) বা ম্যালওয়্যার সাইটের তালিকায় আছে। এটি খুলবেন না।"},
     "urgency": {"en": "Pushes you to act immediately.", "hi": "तुरंत कुछ करने का दबाव डालता है।", "bn": "এখনই কিছু করার চাপ দেয়।"},
     "threat_block": {"en": "Threatens to block or cut off your account or service.", "hi": "खाता या सेवा बंद करने की धमकी देता है।", "bn": "অ্যাকাউন্ট বা পরিষেবা বন্ধ করার হুমকি দেয়।"},
 }

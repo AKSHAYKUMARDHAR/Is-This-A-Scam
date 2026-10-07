@@ -16,3 +16,8 @@ services:
         value: "10"
       - key: STATS_TOKEN
         generateValue: true
+# Optional, each off until set in the Render dashboard (service > Environment), which redeploys:
+#   DATABASE_URL           Postgres URL (e.g. a free Neon database in Singapore): keeps the usage
+#                          log across redeploys; without it the log is a file that each deploy wipes.
+#   SAFE_BROWSING_API_KEY  Google Safe Browsing key: a link on Google's phishing/malware list
+#                          makes the verdict "Likely scam". Only the links are sent, never the message.

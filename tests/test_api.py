@@ -17,6 +17,8 @@ def client(tmp_path, monkeypatch):
     monkeypatch.setenv("LOG_PATH", str(tmp_path / "events.jsonl"))
     monkeypatch.setenv("RATE_LIMIT_PER_HOUR", "5")
     monkeypatch.delenv("STATS_TOKEN", raising=False)
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.delenv("SAFE_BROWSING_API_KEY", raising=False)
     import checker.config
     importlib.reload(checker.config)
     import api.main

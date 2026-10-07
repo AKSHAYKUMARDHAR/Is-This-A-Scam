@@ -28,7 +28,8 @@ from .text_utils import (
 )
 
 HARD = ("injection", "asks_secret", "pin_to_receive", "remote_access", "apk_file", "digital_arrest",
-        "safe_account", "official_fee_personal_upi", "guaranteed_returns", "task_scam", "power_cut_threat")
+        "safe_account", "official_fee_personal_upi", "guaranteed_returns", "task_scam", "power_cut_threat",
+        "known_bad_link")   # known_bad_link: added by the pipeline from Google Safe Browsing, when it is on
 STRONG = ("secrecy", "new_number_money", "upfront_fee", "personal_upi_payment", "prize_lottery",
           "lookalike_domain", "risky_link", "lure_link", "daily_earnings", "family_pressure", "official_asks_money",
           "return_request", "screenshot_claim", "withdrawal_fee")

@@ -31,3 +31,7 @@ MAX_TEXT_CHARS = _int("MAX_TEXT_CHARS", "2000")
 MAX_IMAGE_BYTES = _int("MAX_IMAGE_BYTES", "4000000")
 RATE_LIMIT_PER_HOUR = _int("RATE_LIMIT_PER_HOUR", "30")
 LOG_PATH = os.getenv("LOG_PATH", "data/logs/events.jsonl")
+
+# Optional services, each off unless its setting is present
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()                  # Postgres for the event log (survives redeploys)
+SAFE_BROWSING_API_KEY = os.getenv("SAFE_BROWSING_API_KEY", "").strip()  # Google Safe Browsing link check

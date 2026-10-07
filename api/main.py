@@ -9,8 +9,10 @@ GET  /api/stats      the PRD's success metrics from the event log (optional STAT
 GET  /healthz
 
 Privacy: message text and images are processed in memory and never written anywhere. The event log
-holds verdicts, types, languages, latency and feedback only.
+holds verdicts, types, languages, latency and feedback only. With SAFE_BROWSING_API_KEY set, the links
+in a message (never the message) are sent to Google Safe Browsing.
 """
+import asyncio
 import base64
 import binascii
 import hashlib
@@ -25,20 +27,22 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from checker import advice, config
+from checker.linkcheck import SafeBrowsing
 from checker.llm import QuotaExhausted, get_provider
 from checker.pipeline import CheckInput, run_check
 from checker.prompts import PROMPT_VERSION
 from checker.taxonomy import LANGS
 
 from .guards import BurstDetector, LRUCache, RateLimiter
-from .store import FEEDBACK_EVENTS, EventStore, hash_id
+from .store import FEEDBACK_EVENTS, hash_id, make_store
 
 WEB = pathlib.Path(__file__).resolve().parent.parent / "web"
 CALL_FIELDS = {"claimed", "asked", "threat", "video_or_secret", "safe_account", "details"}
 
 app = FastAPI(title="Is This a Scam?", docs_url="/api/docs", openapi_url="/api/openapi.json")
 provider = get_provider()
-store = EventStore(config.LOG_PATH)
+store = make_store(config.DATABASE_URL, config.LOG_PATH)
+link_checker = SafeBrowsing(config.SAFE_BROWSING_API_KEY) if config.SAFE_BROWSING_API_KEY else None
 limiter = RateLimiter(config.RATE_LIMIT_PER_HOUR)
 cache = LRUCache()
 bursts = BurstDetector()
@@ -111,7 +115,7 @@ async def check(req: CheckRequest, request: Request):
     if not cached:
         inp = CheckInput(kind=req.kind, text=req.text, call=req.call, image=image, image_mime=req.image_mime, ui_lang=lang)
         try:
-            card, trace = await run_check(inp, provider)
+            card, trace = await run_check(inp, provider, link_checker=link_checker)
         except QuotaExhausted:
             raise HTTPException(503, "The checker is at its daily limit. Please try again tomorrow, or call 1930 if you need help now.")
         cache.put(cache_key, card)
@@ -120,7 +124,7 @@ async def check(req: CheckRequest, request: Request):
         card = {**card, "check_id": uuid.uuid4().hex[:12], "latency_ms": 0}   # feedback stays per check
         model_calls, errors = 0, 0
 
-    store.append({
+    await asyncio.to_thread(store.append, {
         "type": "check", "check_id": card["check_id"], "client": hash_id(req.client_id), "variant": req.variant, "ref": req.ref,
         "kind": req.kind, "lang": card["lang"], "detected_lang": card["detected_lang"], "verdict": card["verdict"],
         "scam_type": card["scam_type"], "reason": card["reason"], "hard_flags": card["hard_flags"],
@@ -136,8 +140,8 @@ async def check(req: CheckRequest, request: Request):
 async def feedback(req: FeedbackRequest):
     if req.event not in FEEDBACK_EVENTS:
         raise HTTPException(422, "Unknown event.")
-    store.append({"type": "feedback", "check_id": req.check_id, "client": hash_id(req.client_id),
-                  "event": req.event, "variant": req.variant})
+    await asyncio.to_thread(store.append, {"type": "feedback", "check_id": req.check_id, "client": hash_id(req.client_id),
+                                           "event": req.event, "variant": req.variant})
     return {"ok": True}
 
 
@@ -156,12 +160,13 @@ async def stats(x_stats_token: str | None = Header(None)):
     token = os.getenv("STATS_TOKEN")
     if token and x_stats_token != token:
         raise HTTPException(401, "Stats need a token.")
-    return store.stats()
+    return await asyncio.to_thread(store.stats)
 
 
 @app.get("/healthz")
 async def healthz():
-    return {"ok": True, "model": getattr(provider, "model", None)}
+    return {"ok": True, "model": getattr(provider, "model", None),
+            "event_store": "postgres" if config.DATABASE_URL else "file", "safe_browsing": link_checker is not None}
 
 
 @app.get("/")
