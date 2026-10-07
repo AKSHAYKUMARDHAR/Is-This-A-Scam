@@ -1,0 +1,50 @@
+{"id": "I001", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "bank_kyc", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I002", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "investment", "reason": "hard_flag", "hard_flags": ["injection", "guaranteed_returns"], "samples": []}
+{"id": "I003", "label": "scam", "lang": "hi", "verdict": "scam", "scam_type": "bill_challan", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I004", "label": "scam", "lang": "bn", "verdict": "scam", "scam_type": "parcel", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I005", "label": "scam", "lang": "hi-Latn", "verdict": "scam", "scam_type": "bank_kyc", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I006", "label": "scam", "lang": "bn-Latn", "verdict": "scam", "scam_type": "bill_challan", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I007", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "bank_kyc", "reason": "hard_flag", "hard_flags": ["injection", "asks_secret"], "samples": []}
+{"id": "I008", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "other", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I009", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "fake_job", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I010", "label": "scam", "lang": "hi", "verdict": "scam", "scam_type": "parcel", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I011", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "investment", "reason": "hard_flag", "hard_flags": ["guaranteed_returns"], "samples": [["scam", 0.99, "investment"]]}
+{"id": "I012", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "fake_payment", "reason": "agreement", "hard_flags": [], "samples": [["scam", 0.99, "fake_payment"], ["scam", 0.99, "fake_payment"]]}
+{"id": "I013", "label": "scam", "lang": "hi-Latn", "verdict": "scam", "scam_type": "fake_job", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I014", "label": "scam", "lang": "bn", "verdict": "scam", "scam_type": "investment", "reason": "hard_flag", "hard_flags": ["injection", "guaranteed_returns"], "samples": []}
+{"id": "I015", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "parcel", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I016", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "bank_kyc", "reason": "hard_flag", "hard_flags": ["injection", "apk_file"], "samples": []}
+{"id": "I017", "label": "scam", "lang": "hi", "verdict": "scam", "scam_type": "fake_job", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I018", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "digital_arrest", "reason": "hard_flag", "hard_flags": ["injection", "digital_arrest"], "samples": []}
+{"id": "I019", "label": "scam", "lang": "bn-Latn", "verdict": "scam", "scam_type": "fake_payment", "reason": "hard_flag", "hard_flags": ["injection", "pin_to_receive"], "samples": []}
+{"id": "I020", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "investment", "reason": "agreement", "hard_flags": [], "samples": [["scam", 1.0, "investment"], ["scam", 1.0, "investment"]]}
+{"id": "I021", "label": "scam", "lang": "hi-Latn", "verdict": "scam", "scam_type": "family_emergency", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I022", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "bill_challan", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I023", "label": "scam", "lang": "bn", "verdict": "scam", "scam_type": "bank_kyc", "reason": "hard_flag", "hard_flags": ["injection", "asks_secret"], "samples": []}
+{"id": "I024", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "investment", "reason": "hard_flag", "hard_flags": ["guaranteed_returns"], "samples": [["scam", 0.99, "investment"]]}
+{"id": "I025", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "other", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I026", "label": "scam", "lang": "hi", "verdict": "scam", "scam_type": "investment", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I027", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "fake_payment", "reason": "hard_flag", "hard_flags": ["injection", "pin_to_receive"], "samples": []}
+{"id": "I028", "label": "scam", "lang": "bn-Latn", "verdict": "scam", "scam_type": "investment", "reason": "hard_flag", "hard_flags": ["guaranteed_returns"], "samples": [["scam", 0.99, "investment"]]}
+{"id": "I029", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "bank_kyc", "reason": "hard_flag", "hard_flags": ["remote_access"], "samples": [["scam", 0.99, "bank_kyc"]]}
+{"id": "I030", "label": "scam", "lang": "hi-Latn", "verdict": "scam", "scam_type": "digital_arrest", "reason": "hard_flag", "hard_flags": ["injection", "digital_arrest"], "samples": []}
+{"id": "I031", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "parcel", "reason": "agreement", "hard_flags": [], "samples": [["scam", 1.0, "parcel"], ["scam", 0.99, "parcel"]]}
+{"id": "I032", "label": "scam", "lang": "bn", "verdict": "scam", "scam_type": "fake_job", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I033", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "investment", "reason": "hard_flag", "hard_flags": ["injection", "task_scam"], "samples": []}
+{"id": "I034", "label": "scam", "lang": "hi", "verdict": "scam", "scam_type": "bank_kyc", "reason": "hard_flag", "hard_flags": ["injection", "asks_secret"], "samples": []}
+{"id": "I035", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "family_emergency", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I036", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "bill_challan", "reason": "hard_flag", "hard_flags": ["power_cut_threat"], "samples": [["scam", 0.99, "bill_challan"]]}
+{"id": "I037", "label": "scam", "lang": "bn-Latn", "verdict": "scam", "scam_type": "bank_kyc", "reason": "hard_flag", "hard_flags": ["injection", "asks_secret"], "samples": []}
+{"id": "I038", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "digital_arrest", "reason": "hard_flag", "hard_flags": ["safe_account"], "samples": [["scam", 0.99, "investment"]]}
+{"id": "I039", "label": "scam", "lang": "hi-Latn", "verdict": "scam", "scam_type": "fake_payment", "reason": "hard_flag", "hard_flags": ["injection", "pin_to_receive"], "samples": []}
+{"id": "I040", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "fake_job", "reason": "agreement", "hard_flags": [], "samples": [["scam", 0.99, "fake_job"], ["scam", 0.99, "fake_job"]]}
+{"id": "I041", "label": "scam", "lang": "bn", "verdict": "scam", "scam_type": "digital_arrest", "reason": "hard_flag", "hard_flags": ["injection", "digital_arrest"], "samples": []}
+{"id": "I042", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "other", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I043", "label": "scam", "lang": "hi", "verdict": "scam", "scam_type": "parcel", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I044", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "investment", "reason": "hard_flag", "hard_flags": ["guaranteed_returns"], "samples": [["scam", 1.0, "investment"]]}
+{"id": "I045", "label": "scam", "lang": "bn-Latn", "verdict": "scam", "scam_type": "fake_job", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I046", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "bank_kyc", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I047", "label": "scam", "lang": "hi-Latn", "verdict": "scam", "scam_type": "investment", "reason": "hard_flag", "hard_flags": ["injection", "guaranteed_returns"], "samples": []}
+{"id": "I048", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "fake_payment", "reason": "hard_flag", "hard_flags": ["injection", "pin_to_receive"], "samples": []}
+{"id": "I049", "label": "scam", "lang": "bn", "verdict": "scam", "scam_type": "bill_challan", "reason": "hard_flag", "hard_flags": ["injection"], "samples": []}
+{"id": "I050", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "digital_arrest", "reason": "agreement", "hard_flags": [], "samples": [["scam", 1.0, "digital_arrest"], ["scam", 1.0, "digital_arrest"]]}

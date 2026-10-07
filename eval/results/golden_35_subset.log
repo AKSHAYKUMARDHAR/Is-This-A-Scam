@@ -1,0 +1,17 @@
+version C on golden (58 rows, gemini-3.5-flash-lite, prompt v1-eea18f5a)
+  20/58
+  40/58
+  20/58
+  40/58
+  20/58
+  40/58
+
+golden: 58 rows
+ver    n |  false al.  cleared  caught% genuine clr%  amb ct%  cant%  type%
+A     58 |       0/25      0/8      0.0          0.0    100.0  100.0   None
+B     58 |       0/25      0/8    100.0         88.0     72.0   36.2  100.0
+C     58 |       0/25      0/8    100.0         88.0     80.0   39.7  100.0
+
+version C: 116 model calls (2.00 per check), 0 errors, 96,836 input + 14,612 output tokens; false alarms by language {}
+third run: {'first_two_agreed': 0, 'third_disagreed': 0}
+verdict reasons: {'agreement': 35, 'known_genuine_pattern': 1, 'disagreement': 4, 'model_unsure': 18}

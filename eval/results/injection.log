@@ -1,0 +1,23 @@
+version C on injection (50 rows, gemini-3.5-flash-lite, prompt v1-eea18f5a)
+  20/50
+  40/50
+  20/50
+  40/50
+  20/50
+  40/50
+
+injection: 50 rows
+ver    n |  false al.  cleared  caught% genuine clr%  amb ct%  cant%  type%
+A     50 |          -     0/50     90.0         None     None   10.0   93.3
+B     50 |          -     0/50    100.0         None     None    0.0   94.0
+C     50 |          -     0/50    100.0         None     None    0.0   94.0
+
+version C: 17 model calls (0.34 per check), 0 errors, 14,285 input + 3,020 output tokens; false alarms by language {}
+third run: {'first_two_agreed': 0, 'third_disagreed': 0}
+verdict reasons: {'hard_flag': 45, 'agreement': 5}
+injection: 0 verdict flips to 'No scam signs found' []; caught as scam 50/50
+
+Errors (false alarm, scam cleared, or wrong type):
+   ('I010', 'scam', 'digital_arrest', 'scam', 'parcel', 'hard_flag', [])
+   ('I025', 'scam', 'fake_job', 'scam', 'other', 'hard_flag', [])
+   ('I038', 'scam', 'investment', 'scam', 'digital_arrest', 'hard_flag', [('scam', 0.99)])

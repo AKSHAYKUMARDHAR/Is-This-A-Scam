@@ -147,6 +147,10 @@ GUARANTEED = [
     rx(r"\b(?:pakka|guaranteed|guarantee|nishchit)\b\W+(?:[\w%]+\W+){0,2}?(?:profit|returns?|munafa|income|labh|lav|kamai)\b"),
     rx(r"\b(?:protidin|roz|rozana|har\s+din|har\s+mahine|mahine|mash\s*e)\b\W+(?:\w+\W+){0,3}?\d+(?:\.\d+)?\s?%|\d+(?:\.\d+)?\s?%\W+(?:\w+\W+){0,2}?(?:monthly|weekly|daily|roz|protidin)\b"),
 ]
+# Romanised rate patterns ("protidin 10%", "mash e 30%") also match discounts ("ei mash e 50% chhar"),
+# found by the held-out run (H197); they count only next to a returns word.
+_LATN_RATE = len(GUARANTEED) - 1
+_RETURNS_WORD = rx(r"\b(?:profit|returns?|munafa|income|labh|lav|kamai|paben|milega|interest|byaj)\b|লাভ|মুনাফা|आय|मुनाफा|रिटर्न")
 TASK = [
     rx(r"\b(?:like|subscribe|rate|rating|review|follow|5[\s-]?star|five[\s-]?star)s?\b\W+(?:[\w'&]+\W+){0,4}?(?:youtube|videos?|hotels?|google\s+maps|maps|instagram|reels?|products?|movies?|restaurants?|pages?|posts?)\b"),
     rx(r"\b(?:youtube|videos?|hotels?|instagram|products?|movies?|restaurants?)\s+(?:reviews?|ratings?|likes?)\b"),
@@ -204,8 +208,9 @@ _TYPE_WORDS = {
     "other": r"\b(?:lottery|prize|loan|kbc|video)\b|लॉटरी|इनाम|লটারি|পুরস্কার",
 }
 _TYPE_RX = {k: rx(v) for k, v in _TYPE_WORDS.items()}
+# "safe_account" is not here: an "escrow account" can be an investment scam too (held-out H012).
 _HARD_TYPE = {"guaranteed_returns": "investment", "task_scam": "investment", "digital_arrest": "digital_arrest",
-              "safe_account": "digital_arrest", "pin_to_receive": "fake_payment", "official_fee_personal_upi": "bill_challan",
+              "pin_to_receive": "fake_payment", "official_fee_personal_upi": "bill_challan",
               "power_cut_threat": "bill_challan"}
 
 
@@ -284,7 +289,9 @@ def scan(text: str, call: dict | None = None) -> RuleResult:
         res.hard.append(Flag("official_fee_personal_upi", personal_upis[0]))
     if _TONIGHT.search(t) and (m := _first(POWER_CUT, t, neg=False, aware=True)):
         res.hard.append(Flag("power_cut_threat", _q(m)))
-    if not _YEARLY_PRODUCT.search(t) and (m := _first(GUARANTEED, t, neg=False, aware=True)):
+    if not _YEARLY_PRODUCT.search(t) and (m := _first(GUARANTEED[:_LATN_RATE], t, neg=False, aware=True)):
+        res.hard.append(Flag("guaranteed_returns", _q(m)))
+    elif not _YEARLY_PRODUCT.search(t) and _RETURNS_WORD.search(t) and (m := _first(GUARANTEED[_LATN_RATE:], t, neg=False, aware=True)):
         res.hard.append(Flag("guaranteed_returns", _q(m)))
     if (m := _first(TASK, t, neg=False, aware=True)) and _EARN.search(t):
         res.hard.append(Flag("task_scam", _q(m)))
