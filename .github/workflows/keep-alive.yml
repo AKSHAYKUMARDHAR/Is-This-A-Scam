@@ -1,0 +1,15 @@
+# Keeps the free Render instance awake: Render sleeps a free web service after 15 minutes
+# without traffic, and the first visit after that takes about a minute. /healthz never calls
+# the model, so these pings cost no Gemini quota. GitHub may delay scheduled runs at busy times.
+name: keep-alive
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Ping the live app
+        run: curl -fsS --retry 3 --retry-delay 10 --max-time 90 https://is-this-a-scam.onrender.com/healthz

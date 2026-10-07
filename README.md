@@ -5,7 +5,7 @@ screenshot, or answer five questions about a phone call. You get one of three ve
 flags quoted from your own message, and what to do next. It never says "safe": when the evidence is
 thin it says **"Can't tell, verify it yourself"** instead of guessing.
 
-- **Try it: [is-this-a-scam.onrender.com](https://is-this-a-scam.onrender.com)** (free plan: the first visit after a quiet spell takes about a minute to wake up)
+- **Try it: [is-this-a-scam.onrender.com](https://is-this-a-scam.onrender.com)**
 - Product requirements: [docs/PRD.md](docs/PRD.md) ([live doc](https://claude.ai/code/artifact/5868d9dc-3379-41da-9a35-3a2f6e0fa4ef))
 - Case study: [akshaykumardhar.github.io/case-studies/scam-checker.html](https://akshaykumardhar.github.io/case-studies/scam-checker.html)
 - Built with Claude Code, on the pattern of my [UPI Triage Agent](https://github.com/AKSHAYKUMARDHAR/UPI-Triage-Agent):
@@ -223,7 +223,9 @@ python -m eval.run_eval eval/data/holdout.jsonl --gate --offline                
 India): press the button, sign in with GitHub, paste `GEMINI_API_KEY`, and press Apply. The image is
 tested locally with Render's `PORT` convention.
 
-- The free plan sleeps after 15 minutes without traffic; the first visit after that takes about a minute.
+- The free plan sleeps after 15 minutes without traffic, and the first visit after that takes about a
+  minute. A scheduled GitHub Action ([keep-alive.yml](.github/workflows/keep-alive.yml)) pings `/healthz`
+  every 10 minutes to keep it awake; the health check never calls the model, so it costs no quota.
 - `/api/stats` is protected by a generated `STATS_TOKEN` (send it as `X-Stats-Token`).
 - The free plan's disk is not persistent, so the event log resets on restart; attach a disk or a
   database before relying on the launch metrics.
