@@ -1,6 +1,6 @@
 # PRD: "Is This a Scam?" — Multilingual Scam Checker for India
 
-Akshay Dhar · 7 October 2026 · [Live doc](https://claude.ai/code/artifact/5868d9dc-3379-41da-9a35-3a2f6e0fa4ef)
+Akshay Dhar · 7 October 2026, updated 8 October (decision rule 5) · [Live doc](https://claude.ai/code/artifact/5868d9dc-3379-41da-9a35-3a2f6e0fa4ef)
 
 ## TL;DR
 
@@ -147,6 +147,7 @@ The checker never says "safe." It gives one of three verdicts and falls back to 
 2. **Self-consistency instead of self-reported confidence.** A model's own confidence scores are poorly calibrated. Each check runs the classifier 3 times, and only agreement counts toward a firm verdict.
 3. **Thresholds are set on data, not by feel.** The scam and genuine thresholds are tuned on the golden set to meet the 2% false-alarm target, then confirmed once on the held-out set.
 4. **Can't tell has a budget.** If more than 25% of real checks end in "can't tell," the tool feels useless. That number is tracked as coverage and traded off against precision on purpose.
+5. **A model-only "Likely scam" needs something to warn against.** *(Added 8 October 2026, after the first held-out run failed its ambiguous-message check.)* The message must ask for something risky (pay, open a link, call a number given in it, share a code or personal details, install an app, scan a QR code, join a group) or carry a strong red flag. A first-contact opener such as "this is my new number, save it" can't cost anything yet, so it gets "can't tell" plus what to watch for in the next message.
 
 **Writing rules:** plain words a 12-year-old understands, red flags quoted from the user's own message, never blaming the user, and every verdict ends in an action.
 
