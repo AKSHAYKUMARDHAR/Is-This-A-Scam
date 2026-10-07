@@ -111,3 +111,44 @@ def test_call_answers():
 def test_type_hints():
     assert rules.scan("Earn 5% daily guaranteed").type_hint == "investment"
     assert rules.guess_type("Your parcel is held at customs, pay the duty") == "parcel"
+
+
+@pytest.mark.parametrize("text,code", [
+    ("Please send ₹2,000 to my account today", "pay"),
+    ("Bhai 1500 bhej de, kal lauta dunga", "pay"),
+    ("এবারের পুজোর চাঁদা দিন", "pay"),
+    ("कृपया बकाया ₹2,400 जमा करें", "pay"),
+    ("Check your offer here: offers-now.in/x", "link"),
+    ("ami link pathachhi", "link"),
+    ("For details call our agent on 98765 43210", "call_number"),
+    ("বিস্তারিত জানতে ৯৮৭৬৫ ৪৩২১০ নম্বরে ফোন করুন", "call_number"),
+    ("Update your KYC details today", "share_details"),
+    ("अपना आधार नंबर भेजें", "share_details"),
+    ("কার্ডের তথ্য দিন", "share_details"),
+    ("Download the app to claim", "install_app"),
+    ("Scan this QR code", "scan_qr"),
+    ("Press 9 to speak to an officer", "contact"),
+    ("Premium membership ₹15,000 dile protidin 3ta call", "pay"),
+    ("₹৫০,০০০ দিলে ৭ দিনের মধ্যে জয়েনিং লেটার", "pay"),
+    ("आधा पैसा पहले, आधा जॉइनिंग के बाद", "pay"),
+    ("हमारे इंस्टीट्यूशनल अकाउंट में पैसा लगाइए", "pay"),
+    ("Send 0.01 BTC and receive 0.1 BTC back", "pay"),
+    ("Join the Nifty Kings WhatsApp group for intraday calls", "join_group"),
+])
+def test_asks_detected(text, code):
+    assert code in rules.scan(text).codes("asks")
+
+
+@pytest.mark.parametrize("text", [
+    "Hey it's me, new number. Save it.",
+    "Hi, is this Neha? I got your number from the alumni group. Can we talk?",
+    "নমস্কার, আমরা একটি সার্ভে করছি। ৫ মিনিট সময় দিলে ₹১০০ রিচার্জ পাবেন।",
+])
+def test_no_risky_ask(text):
+    assert not rules.scan(text).risky_ask()
+
+
+def test_call_answers_become_asks():
+    res = rules.scan("", {"claimed": "bank_rbi", "asked": ["personal_details"], "threat": "none"})
+    assert res.codes("asks") == ["share_details"]
+    assert not rules.scan("", {"claimed": "courier", "asked": ["nothing"], "threat": "none"}).risky_ask()

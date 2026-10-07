@@ -9,6 +9,11 @@ Three tiers:
 Genuine signals (an official link, an awareness message) are reported for the explanation; they
 never override a hard flag.
 
+Separately, the rules list what the message asks the reader to do ("asks"). A message with no risky
+ask (pay, open a link, call a number given in it, share a code or personal details, install an app,
+scan a QR code, stay on a call) can't cost anyone anything yet, so the model alone can't call it a
+scam (policy rule 8).
+
 Every hard rule checks for negation or awareness wording around the match, so "never share your
 OTP" and "there is no such thing as a digital arrest" do not fire. Indic text is normalised (NFC,
 nukta removed) on both the pattern and the input side, so spelling variants of the same word match.
@@ -18,7 +23,8 @@ from dataclasses import dataclass, field
 
 from .guard import find_injection
 from .text_utils import (
-    BENGALI, BRAND_TOKENS, DEVANAGARI, LURE_TOKENS, RISKY_TLDS, SHORTENERS, indic_word, is_official, norm, rx, upi_ids, urls,
+    BENGALI, BRAND_TOKENS, DEVANAGARI, LURE_TOKENS, PHONE_RE, RISKY_TLDS, SHORTENERS, indic_word, is_official, norm, rx, upi_ids,
+    urls,
 )
 
 HARD = ("injection", "asks_secret", "pin_to_receive", "remote_access", "apk_file", "digital_arrest",
@@ -26,6 +32,10 @@ HARD = ("injection", "asks_secret", "pin_to_receive", "remote_access", "apk_file
 STRONG = ("secrecy", "new_number_money", "upfront_fee", "personal_upi_payment", "prize_lottery",
           "lookalike_domain", "risky_link", "lure_link", "daily_earnings", "family_pressure", "official_asks_money",
           "return_request", "screenshot_claim", "withdrawal_fee")
+RISKY_ASKS = ("pay", "link", "call_number", "share_secret", "share_details", "install_app", "scan_qr", "stay_on_call",
+              "join_group")
+# "contact" (call me, call back, press 1, reply on WhatsApp) is recorded but is not a risky ask: talking
+# to someone costs nothing by itself, and the ask that follows can be checked again.
 
 
 @dataclass
@@ -40,11 +50,15 @@ class RuleResult:
     strong: list[Flag] = field(default_factory=list)
     weak: list[Flag] = field(default_factory=list)
     genuine: list[Flag] = field(default_factory=list)
+    asks: list[Flag] = field(default_factory=list)
     type_hint: str | None = None
     type_fixed: bool = False    # True when a hard rule implies the type (e.g. guaranteed returns -> investment)
 
     def codes(self, tier: str) -> list[str]:
         return [f.code for f in getattr(self, tier)]
+
+    def risky_ask(self) -> bool:
+        return any(f.code in RISKY_ASKS for f in self.asks)
 
 
 # ---- negation and awareness ---------------------------------------------------------------------
@@ -196,6 +210,46 @@ POWER_CUT = [rx(r"(?:electricity|power|bijli|बिजली|বিদ্যু�
 _TONIGHT = rx(r"\btonight\b|\btoday\b|आज\s*रात|आज|aaj\s+raat|আজ\s*রাতে|আজ|\d{1,2}[:.]\d{2}\s*(?:pm|baje|बजे)?")
 _PINCODE = rx(r"\bpin\s*code\b|\bpincode\b|पिन\s*कोड|পিন\s*কোড")
 
+# ---- asks: what the message wants the reader to do ---------------------------------------------
+# Wide on purpose: a missed ask could turn a real scam into "Can't tell", while an extra one only
+# leaves the model's verdict as it was.
+ASK_PAY = rx(r"\b(?:pay|gpay|google\s+pay|phonepe|paytm|deposit|donate|chanda|recharge\s+(?:your|now|it|kar\w*|kor\w*)|"
+             r"invest\w*|buy|purchase|subscribe|paisa\s+laga\w*|paise\s+laga\w*|taka\s+(?:rakh|laga|khata)\w*|kharid\w*|kinun)\b|"
+             r"निवेश|पैसा\s*लगा|पैसे\s*लगा|रुपये\s*लगा|खरीद|বিনিয়োগ|টাকা\s*(?:রাখ|লাগা|খাটা)|কিনুন|কিনে\s*নিন|"
+             r"पेमेंट\s*कर|भुगतान\s*कर|जमा\s*कर|रिचार्ज\s*कर|दान\s*कर|পেমেন্ট\s*কর|জমা\s*(?:দিন|দাও|করুন|করে\s*দিন)|"
+             r"রিচার্জ\s*কর|চাঁদা|দান\s*কর")
+_SEND = rx(r"\b(?:send|transfer|bhej\w*|pathao|pathan|pathiye|pathie|lauta\w*|ferot|return|wapas)\b|भेज|लौटा|वापस|ट्रांसफर|"
+           r"পাঠ|ফেরত|ট্রান্সফার")
+_MONEY = rx(r"₹|\brs\.?\s?\d|\b(?:rupees?|rupaye|taka|money|paisa|paise|amount|fees?|\d[\d,]{2,})\b|रुपये|रुपए|पैसे|पैसा|फीस|"
+            r"টাকা|ফি(?![ঀ-৿])|[०-९]{3,}|[০-৯]{3,}|\b(?:btc|usdt|eth|bitcoin|crypto\w*)\b")
+# "₹15,000 dile ... call", "₹৫০,০০০ দিলে জয়েনিং লেটার", "आधा पैसा पहले": paying for an outcome is a pay ask
+# too (found on held-out v1). The amount must come first: "give 5 minutes and get ₹100" asks for no money.
+_PAY_FOR = rx(r"(?:(?:₹|\brs\.?)\s?[\d०-९০-৯][\d,.०-९০-৯]*|[\d०-९০-৯][\d,.०-९০-৯]*\s*(?:lakh|lac|हजार|लाख|হাজার|লাখ|rupees?|"
+              r"rupaye|रुपये|रुपए|টাকা|taka))[^.।!?\n]{0,25}?(?:\b(?:give|dile|diye|din|dao|dena|de\s+do|dijiye|dein|deben)\b|"
+              r"देने|दें|दे\s*दो|दीजिए|देना|দিলে|দিন|দাও|দিয়ে|দেবেন|দিতে)|"
+              r"(?:पैसा|पैसे|रुपये|টাকা|\bpaisa\b|\bpaise\b|\btaka\b)\s*(?:पहले|\bpehle\b|আগে|\bage\b)")
+ASK_LINK = rx(r"\b(?:link|click|tap\s+(?:here|on|the))\b|लिंक|क्लिक|লিঙ্ক|লিংক|ক্লিক")
+_MASKED_PHONE = rx(r"(?<![\w])(?:\+?91[\s-]?)?[6-9]\d{3,7}[x×*]{2,}")
+_TOLL_FREE = rx(r"\b1[89]00[\s-]?\d{3}[\s-]?\d{3,4}\b|\b1800[\s-]?\d{4,7}\b")
+_DETAIL = rx(r"\b(?:aadhaa?r|pan|kyc|card\s+(?:number|details|no)|cvv|bank\s+(?:details|account)|account\s+(?:number|details|no)|"
+             r"date\s+of\s+birth|dob|password|login|net\s*banking|payment\s+details|personal\s+details|card\s+details)\b|"
+             r"आधार|पैन|केवाईसी|कार्ड|बैंक\s*(?:खाता|डिटेल|विवरण)|पासवर्ड|আধার|প্যান|কেওয়াইসি|কার্ডের|ব্যাংকের\s*তথ্য|পাসওয়ার্ড")
+_DETAIL_VERB = rx(r"\b(?:share|send|update|enter|verify|confirm|provide|give|fill|submit|upload|link|dijiye|bhejein|bhejo|batayein|"
+                  r"bataiye|update\s+kar\w*|din|pathan|janan)\b|दें|दीजिए|भेजें|भेजिए|अपडेट|शेयर|बताएं|बताइए|भरें|লিংক|"
+                  r"দিন|পাঠান|আপডেট|জানান|শেয়ার|পূরণ")
+# Joining a trading-tips or "task" group puts the reader in a room the sender runs; it is where
+# investment scams take the money (golden G001: "Join the Nifty Kings WhatsApp group").
+ASK_JOIN = rx(r"\bjoin\b\W+(?:[\w'&]+\W+){0,4}?(?:group|channel|community)\b|\b(?:group|channel)\s+(?:join|me\s+jud\w*|e\s+jog\w*)|"
+              r"ग्रुप\s*(?:में|से)\s*(?:जुड़|जुड|शामिल)|(?:গ্রুপে|চ্যানেলে)\s*(?:যোগ|জয়েন)")
+ASK_INSTALL = rx(r"\b(?:install\w*|download\w*)\b|इंस्टॉल|डाउनलोड|ইনস্টল|ডাউনলোড|\.apk\b|any\s?desk|team\s?viewer")
+ASK_QR = rx(r"\bqr\b|क्यूआर|কিউআর|\bscan\b|स्कैन|স্ক্যান")
+ASK_CONTACT = rx(r"\b(?:call\s+(?:me|us|back|now|karein|karo|kijiye|korun|koro|kar)|contact|reach\s+(?:me|us)|press\s+\d|dial|"
+                 r"whatsapp\s+(?:me|us|pe|par|e|kar\w*|kor\w*)|sampark|jogajog|reply)\b|कॉल\s*कर|संपर्क|दबाएं|दबाइए|बात\s*कीजिए|"
+                 r"কল\s*কর|যোগাযোগ|টিপুন|চাপুন|কথা\s*বল|রিপ্লাই")
+_INDIC_DIGITS = str.maketrans("০১২৩৪৫৬৭৮৯०१२३४५६७८९", "01234567890123456789")
+_CALL_ASKED = {"money_transfer": "pay", "otp_pin": "share_secret", "install_app": "install_app",
+               "personal_details": "share_details", "stay_on_call": "stay_on_call"}
+
 _TYPE_WORDS = {
     "digital_arrest": r"\b(?:arrest|warrant|cbi|narcotics|ncb|enforcement\s+directorate|cyber\s+crime|crime\s+branch|court)\b|गिरफ्तार|वारंट|सीबीआई|पुलिस|কোর্ট|গ্রেফতার|সিবিআই|পুলিশ|digital\s+arrest",
     "investment": r"\b(?:invest\w*|trading|trade[sr]?|stocks?|shares?|ipo|crypto|bitcoin|profit|returns?|forex|sebi|task|likes?|reviews?|ratings?|scheme|mining|nifty|algo)\b|निवेश|शेयर|ट्रेडिंग|मुनाफा|टास्क|লাভ|বিনিয়োগ|শেয়ার|ট্রেডিং|টাস্ক|munafa",
@@ -237,6 +291,42 @@ def _link_flags(text: str, res: RuleResult) -> None:
             res.strong.append(Flag("lure_link", full))
 
 
+def _ask_flags(raw: str, t: str, call: dict | None, secret, personal_upis: list[str], res: RuleResult) -> None:
+    def add(code, m=None):
+        res.asks.append(Flag(code, _q(m) if m is not None and hasattr(m, "group") else ""))
+
+    for a in (call or {}).get("asked") or []:
+        if a in _CALL_ASKED:
+            add(_CALL_ASKED[a])
+    if (call or {}).get("safe_account"):
+        add("pay")
+    if (m := ASK_PAY.search(t)) or personal_upis:
+        add("pay", m)
+    elif (m := _SEND.search(t)) and _MONEY.search(t):
+        add("pay", m)
+    elif (m := _PAY_FOR.search(t)):
+        add("pay", m)
+    if urls(raw) or (m := ASK_LINK.search(t)):
+        add("link", m if not urls(raw) else None)
+    digits = raw.translate(_INDIC_DIGITS)
+    if PHONE_RE.search(digits) or _MASKED_PHONE.search(digits) or _TOLL_FREE.search(digits):
+        add("call_number")
+    if secret:
+        add("share_secret", secret)
+    for sentence in re.split(r"[.!?।\n]+", t):
+        if (m := _DETAIL.search(sentence)) and _DETAIL_VERB.search(sentence):
+            add("share_details", m)
+            break
+    if (m := ASK_JOIN.search(t)):
+        add("join_group", m)
+    if (m := ASK_INSTALL.search(t)):
+        add("install_app", m)
+    if (m := ASK_QR.search(t)):
+        add("scan_qr", m)
+    if (m := ASK_CONTACT.search(t)):
+        add("contact", m)
+
+
 def _call_flags(call: dict, res: RuleResult) -> None:
     asked = set(call.get("asked") or [])
     claimed, threat = call.get("claimed"), call.get("threat")
@@ -265,7 +355,7 @@ def scan(text: str, call: dict | None = None) -> RuleResult:
     if inj:
         res.hard.append(Flag("injection", inj))
 
-    m = _first(SECRET, t)
+    m = secret = _first(SECRET, t)
     if m and _DELIVERY_CTX.search(t) and not _CALL_CTX.search(t):
         # Delivery and ride OTPs are meant to be given to the agent at the door: a known genuine pattern.
         res.genuine.append(Flag("delivery_otp", _q(m)))
@@ -319,6 +409,7 @@ def scan(text: str, call: dict | None = None) -> RuleResult:
     if (m := DAILY_EARN.search(t)) and not _AWARE.search(t):
         res.strong.append(Flag("daily_earnings", _q(m)))
     _link_flags(raw, res)
+    _ask_flags(raw, t, call, secret, personal_upis, res)
 
     # weak signals
     for code, p in (("urgency", URGENCY), ("threat_block", THREAT), ("off_platform", OFF_PLATFORM), ("crypto", CRYPTO)):
@@ -328,7 +419,7 @@ def scan(text: str, call: dict | None = None) -> RuleResult:
         res.genuine.append(Flag("awareness"))
 
     # de-duplicate by code, keeping the first quote
-    for tier in ("hard", "strong", "weak", "genuine"):
+    for tier in ("hard", "strong", "weak", "genuine", "asks"):
         seen, kept = set(), []
         for f in getattr(res, tier):
             if f.code not in seen:

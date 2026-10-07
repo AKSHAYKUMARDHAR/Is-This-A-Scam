@@ -95,6 +95,16 @@ TOO_SHORT = {
     "bn": "যাচাই করার মতো যথেষ্ট তথ্য নেই। পুরো বার্তাটি পেস্ট করুন বা কলের কথা লিখুন।",
 }
 
+# Shown on a "Can't tell" card when the model thought "scam" but the message asks for nothing risky yet
+NO_ASK = {
+    "en": "This message doesn't ask you to do anything risky yet. If a later message asks you to pay, open a link, "
+          "share a code or install an app, check that one too, and confirm who it is by calling a number you already know.",
+    "hi": "यह संदेश अभी आपसे कोई जोखिम भरा काम करने को नहीं कह रहा है। अगर अगला संदेश पैसे भेजने, लिंक खोलने, कोड बताने "
+          "या ऐप इंस्टॉल करने को कहे, तो उसे भी जाँचें, और भेजने वाले की पहचान अपने पास पहले से मौजूद नंबर पर कॉल करके पक्की करें।",
+    "bn": "এই বার্তাটি এখনও আপনাকে ঝুঁকির কিছু করতে বলছে না। পরের বার্তায় যদি টাকা পাঠাতে, লিঙ্ক খুলতে, কোড জানাতে বা "
+          "অ্যাপ ইনস্টল করতে বলে, সেটাও যাচাই করুন, আর আগে থেকে জানা নম্বরে ফোন করে নিশ্চিত হয়ে নিন কে পাঠিয়েছে।",
+}
+
 # Why each rule flag matters (shown as a red flag on the card)
 FLAG_WHY = {
     "injection": {"en": "Contains hidden instructions aimed at AI checkers. Real organisations never do this.",

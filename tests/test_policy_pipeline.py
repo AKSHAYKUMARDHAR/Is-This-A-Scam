@@ -1,7 +1,7 @@
 """Verdict policy and the end-to-end pipeline, with a scripted model."""
 import asyncio
 
-from checker import config, policy, rules
+from checker import advice, config, policy, rules
 from checker.llm import FakeProvider, LLMError
 from checker.pipeline import CheckInput, run_check
 
@@ -25,11 +25,13 @@ def run(text, responses, **kw):
 
 def test_policy_table():
     empty = rules.RuleResult()
-    assert policy.decide(empty, [SCAM, SCAM, SCAM]).verdict == "scam"
+    asks_link = rules.RuleResult(asks=[rules.Flag("link")])
+    assert policy.decide(asks_link, [SCAM, SCAM, SCAM]).verdict == "scam"
+    assert policy.decide(empty, [SCAM, SCAM, SCAM]).reason == "no_risky_ask"
     assert policy.decide(empty, [GENUINE] * 3).verdict == "no_signs"
     assert policy.decide(empty, [SCAM, GENUINE]).reason == "disagreement"
     assert policy.decide(empty, [UNSURE] * 3).verdict == "unsure"
-    assert policy.decide(empty, [dict(SCAM, confidence=0.4)] * 3, scam_threshold=0.7).reason == "low_confidence"
+    assert policy.decide(asks_link, [dict(SCAM, confidence=0.4)] * 3, scam_threshold=0.7).reason == "low_confidence"
     assert policy.decide(empty, []).reason == "model_unavailable"
     assert policy.decide(empty, [SCAM], input_ok=False).reason == "too_short"
     with_strong = rules.RuleResult(strong=[rules.Flag("risky_link")])
@@ -61,6 +63,23 @@ def test_delivery_otp_is_capped_at_cant_tell():
     assert card["verdict"] == "no_signs"
     # A caller who wants the "delivery" OTP is not exempt
     assert "asks_secret" in rules.scan("Our delivery agent will call you, tell him the OTP on the phone").codes("hard")
+
+
+def test_model_only_scam_needs_a_risky_ask():
+    # First-contact openers ask for nothing yet: "Can't tell", with a note on what to watch for next
+    for text in ["Hello maa, ye mera naya number hai, purana wala kharab ho gaya. Ise save kar lo.",
+                 "Sir main aapke bank se bol raha hoon, aapka credit card limit badhane ka offer hai. Kya aap interested hain?",
+                 "Hi, is this Neha? I got your number from the alumni group. Can we talk?"]:
+        card, _, _ = run(text, [SCAM])
+        assert card["verdict"] == "unsure" and card["reason"] == "no_risky_ask", text
+        assert card["summary"] == advice.NO_ASK[card["lang"]]
+    # The same model answer stands when the message asks for something risky, or has a strong signal
+    for text in ["Your account statement is ready. View it here: https://bit.ly/3stmnt",
+                 "Bhai urgent 2000 chahiye, kal tak lauta dunga. Tu GPay kar sakta hai?",
+                 "Dear customer, update your PAN details today or your account will be blocked.",
+                 "আপনার মোবাইল নম্বর লাকি নম্বর হিসেবে নির্বাচিত হয়েছে। বিস্তারিত জানতে কল করুন।"]:
+        card, _, _ = run(text, [SCAM])
+        assert card["verdict"] == "scam", text
 
 
 def test_disagreement_stops_after_two_calls():

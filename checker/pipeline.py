@@ -136,6 +136,8 @@ def build_card(decision: policy.Decision, rule_res: rules.RuleResult, samples: l
     genuine_signs = [str(g) for g in (explain or {}).get("genuine_signs") or []][:3] if verdict != "scam" else []
     if decision.reason == "too_short":
         summary = advice.TOO_SHORT[out_lang]
+    elif decision.reason == "no_risky_ask":
+        summary = advice.NO_ASK[out_lang]
     elif (explain and explain.get("summary") and "injection" not in rule_res.codes("hard")
           and explain["label"] == {"scam": "scam", "no_signs": "genuine", "unsure": "unsure"}[verdict]):
         # A model summary is shown only when its label matches the verdict, so a "Can't tell" card

@@ -10,6 +10,12 @@
    neither prove nor disprove a payment, so the answer is to check your own UPI app.
 7. A known genuine pattern (a delivery or ride OTP for the agent at the door, with no call involved)
    caps a model-only "scam" at "unsure". It never clears a message.
+8. A model-only "scam" also needs something to warn against: a risky ask in the message (pay, open a
+   link, call a number given in it, share a code or personal details, install an app, scan a QR code)
+   or a strong rule signal. Without one ("Hi, is this Neha?", "this is my new number, save it") the
+   message can't cost anything yet, so the answer is "Can't tell" with how to check, and the
+   follow-up that does ask can be checked again. Held-out v1 failed its ambiguous-message check on
+   exactly these first-contact openers.
 """
 from collections import Counter
 from dataclasses import dataclass
@@ -72,6 +78,8 @@ def decide(rules: RuleResult, samples: list[dict], *, input_ok: bool = True, scr
         # Golden v1's only false alarm: a delivery OTP for the agent at the door, called a scam by the
         # model. The rules know this genuine pattern, so the model alone can't call it a scam.
         return Decision("unsure", "known_genuine_pattern", None, mean)
+    if label == "scam" and not rules.strong and not rules.risky_ask():
+        return Decision("unsure", "no_risky_ask", _model_type(samples), mean)
     if label == "scam":
         if mean >= t_scam:
             return Decision("scam", "agreement", _model_type(samples) or rules.type_hint or "other", mean)
