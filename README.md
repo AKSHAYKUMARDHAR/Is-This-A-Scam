@@ -99,8 +99,8 @@ why run 1 no longer counts as unseen and run 2 used a fresh set.
 
 ### Release run 1: first held-out set
 
-Same model and thresholds, before rule 8; config frozen in commit `17fe50c` (run 1's decisions are in that
-commit's `eval/results/`). 80 scams, 100 genuine messages (35 hard negatives: OTP messages, KYC reminders,
+Same model and thresholds, before rule 8; config frozen in commit `17fe50c`; run 1's own decisions are in
+`eval/results/` at commit `40514bb`. 80 scams, 100 genuine messages (35 hard negatives: OTP messages, KYC reminders,
 delivery and ride OTPs, police advisories), 20 ambiguous; 37% Hindi, 28.5% Bengali, 34.5% English,
 including romanised Hindi and Bengali; 10 phone calls.
 
