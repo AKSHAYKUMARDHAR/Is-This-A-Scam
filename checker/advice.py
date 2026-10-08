@@ -105,6 +105,16 @@ NO_ASK = {
           "অ্যাপ ইনস্টল করতে বলে, সেটাও যাচাই করুন, আর আগে থেকে জানা নম্বরে ফোন করে নিশ্চিত হয়ে নিন কে পাঠিয়েছে।",
 }
 
+# Shown on a "Can't tell" card when the model's free daily quota ran out and only the rules looked at it
+RULES_ONLY = {
+    "en": "Our AI check has reached its free daily limit, so only our fixed rules looked at this message. They found "
+          "no clear scam pattern, which is not the same as safe. Check it the safe way below, or try again in a few hours.",
+    "hi": "हमारी AI जाँच की आज की मुफ़्त सीमा पूरी हो गई है, इसलिए इस संदेश को सिर्फ हमारे तय नियमों से जाँचा गया। उनमें कोई "
+          "साफ़ स्कैम पैटर्न नहीं मिला, पर इसका मतलब यह नहीं कि संदेश सुरक्षित है। नीचे बताए सुरक्षित तरीके से जाँचें, या कुछ घंटों बाद फिर कोशिश करें।",
+    "bn": "আমাদের AI যাচাইয়ের আজকের বিনামূল্যের সীমা শেষ, তাই এই বার্তাটি শুধু আমাদের নির্দিষ্ট নিয়ম দিয়ে দেখা হয়েছে। তাতে "
+          "স্পষ্ট কোনো স্ক্যাম প্যাটার্ন মেলেনি, কিন্তু তার মানে এটা নিরাপদ নয়। নিচের নিরাপদ উপায়ে যাচাই করুন, বা কয়েক ঘণ্টা পরে আবার চেষ্টা করুন।",
+}
+
 # Why each rule flag matters (shown as a red flag on the card)
 FLAG_WHY = {
     "injection": {"en": "Contains hidden instructions aimed at AI checkers. Real organisations never do this.",

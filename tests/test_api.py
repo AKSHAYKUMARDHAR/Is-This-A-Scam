@@ -6,7 +6,7 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 
-from checker.llm import FakeProvider
+from checker.llm import FakeProvider, QuotaExhausted
 
 SCAM = {"label": "scam", "confidence": 0.95, "scam_type": "bank_kyc", "red_flags": [], "genuine_signs": [],
         "summary": "Looks like a fake bank message."}
@@ -88,3 +88,28 @@ def test_config_and_static(client):
     assert set(cfg["urgent_steps"]) == {"en", "hi", "bn"} and cfg["model_available"] is True
     assert c.get("/").status_code == 200 and "Is This a Scam?" in c.get("/").text
     assert c.get("/app.js").status_code == 200
+
+
+class _OutOfQuota(FakeProvider):
+    async def classify(self, user):
+        raise QuotaExhausted("Gemini daily quota exhausted")
+
+    async def transcribe(self, image, mime):
+        raise QuotaExhausted("Gemini daily quota exhausted")
+
+
+def test_out_of_quota_falls_back_to_rules_and_never_caches(client):
+    import api.main as main
+    c, log = client
+    main.provider = _OutOfQuota()
+    r = c.post("/api/check", json={"kind": "text", "text": "Your KYC is pending. Share the OTP you received to keep the account active."})
+    assert r.status_code == 200 and r.json()["verdict"] == "scam"           # a hard rule still decides
+    text = "Hi, is this Neha? I got your number from the alumni group. Can we talk?"
+    r = c.post("/api/check", json={"kind": "text", "text": text})
+    assert r.status_code == 200 and r.json()["verdict"] == "unsure" and "daily limit" in r.json()["summary"]
+    assert json.loads(log.read_text(encoding="utf-8").splitlines()[-1])["degraded"] is True
+    r = c.post("/api/check", json={"kind": "image", "image_b64": base64.b64encode(b"img").decode()})
+    assert r.status_code == 503 and r.json()["detail"]["code"] == "quota_image"
+    main.provider = FakeProvider([SCAM])                                   # quota back: the full check runs, no stale card
+    r = c.post("/api/check", json={"kind": "text", "text": text})
+    assert "daily limit" not in r.json()["summary"]

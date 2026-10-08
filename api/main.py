@@ -134,13 +134,24 @@ async def check(req: CheckRequest, request: Request):
 
     card = cache.get(cache_key)
     cached = card is not None
+    degraded = False
     if not cached:
         inp = CheckInput(kind=req.kind, text=req.text, call=req.call, image=image, image_mime=req.image_mime, ui_lang=lang)
         try:
             card, trace = await run_check(inp, provider, link_checker=link_checker)
         except QuotaExhausted:
-            raise HTTPException(503, "The checker is at its daily limit. Please try again tomorrow, or call 1930 if you need help now.")
-        cache.put(cache_key, card)
+            # The free model quota is used up for today. A screenshot can't be read without the model; a
+            # message or call still gets the rules' answer, which is never cached, so the full check
+            # runs again once the quota resets.
+            if req.kind == "image":
+                raise HTTPException(503, {"code": "quota_image", "message": "Reading screenshots has reached today's free "
+                                          "limit. Please paste the message text instead, or try again in a few hours."})
+            card, trace = await run_check(inp, None, link_checker=link_checker)
+            if card["verdict"] != "scam":
+                card["summary"] = advice.RULES_ONLY[card["lang"]]
+            degraded = True
+        if not degraded:
+            cache.put(cache_key, card)
         model_calls, errors = trace.calls, len(trace.errors)
     else:
         card = {**card, "check_id": uuid.uuid4().hex[:12], "latency_ms": 0}   # feedback stays per check
@@ -151,7 +162,7 @@ async def check(req: CheckRequest, request: Request):
         "kind": req.kind, "lang": card["lang"], "detected_lang": card["detected_lang"], "verdict": card["verdict"],
         "scam_type": card["scam_type"], "reason": card["reason"], "hard_flags": card["hard_flags"],
         "latency_ms": card["latency_ms"] if not cached else 0, "cached": cached, "model_calls": model_calls,
-        "model_errors": errors, "burst": burst, "relang": req.relang,
+        "model_errors": errors, "burst": burst, "relang": req.relang, "degraded": degraded,
         "provider": getattr(provider, "name", None), "model": getattr(provider, "model", None),
     })
     public = {k: v for k, v in card.items() if k not in ("hard_flags", "reason")}

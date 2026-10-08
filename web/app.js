@@ -103,7 +103,9 @@
         img.onerror = reject;
         img.onload = () => {
           const max = 1600, scale = Math.min(1, max / Math.max(img.width, img.height));
-          if (scale === 1 && file.size < 3.5e6) {
+          // Send small PNG, JPEG or WebP files as they are; re-encode everything else (HEIC, GIF, BMP) as JPEG
+          const sendable = ["image/png", "image/jpeg", "image/webp"].includes(file.type);
+          if (scale === 1 && file.size < 3.5e6 && sendable) {
             resolve({ b64: String(reader.result).split(",")[1], mime: file.type || "image/png", url: reader.result });
             return;
           }
@@ -123,7 +125,12 @@
   async function api(path, body) {
     const res = await fetch(path, { method: body ? "POST" : "GET", headers: body ? { "Content-Type": "application/json" } : {}, body: body ? JSON.stringify(body) : undefined });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.detail || t("error_generic"));
+    if (!res.ok) {
+      // detail: a message, {code, message} for errors the page explains in the user's language, or a validation list
+      const d = data.detail;
+      const msg = d && typeof d === "object" && !Array.isArray(d) ? t("err_" + d.code) || d.message : typeof d === "string" ? d : "";
+      throw new Error(msg || t("error_generic"));
+    }
     return data;
   }
   function track(event, checkId) {
@@ -253,7 +260,7 @@
     try {
       image = await readImage(file);
       $("#previewImg").src = image.url; $("#previewImg").alt = file.name; $("#preview").hidden = false;
-    } catch (err) { showError(t("error_generic")); clearImage(); }
+    } catch (err) { showError(t("err_image_read")); clearImage(); }
   });
   $("#removeImg").addEventListener("click", clearImage);
   $("#checkBtn").addEventListener("click", () => { const req = buildRequest(); if (req) runCheck(req); });
