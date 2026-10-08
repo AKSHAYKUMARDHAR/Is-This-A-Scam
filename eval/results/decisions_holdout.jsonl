@@ -6,10 +6,10 @@
 {"id": "H006", "label": "scam", "lang": "bn-Latn", "verdict": "scam", "scam_type": "investment", "reason": "hard_flag", "hard_flags": ["task_scam"], "samples": [["scam", 0.99, "investment"]]}
 {"id": "H007", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "investment", "reason": "hard_flag", "hard_flags": ["guaranteed_returns"], "samples": [["scam", 1.0, "investment"]]}
 {"id": "H008", "label": "scam", "lang": "hi", "verdict": "scam", "scam_type": "investment", "reason": "agreement", "hard_flags": [], "samples": [["scam", 0.99, "investment"], ["scam", 1.0, "investment"]]}
-{"id": "H009", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "investment", "reason": "agreement", "hard_flags": [], "samples": [["scam", 0.99, "investment"], ["scam", 0.99, "investment"]]}
+{"id": "H009", "label": "scam", "lang": "en", "verdict": "unsure", "scam_type": null, "reason": "no_risky_ask", "hard_flags": [], "samples": [["scam", 0.99, "investment"], ["scam", 0.99, "investment"]]}
 {"id": "H010", "label": "scam", "lang": "bn", "verdict": "scam", "scam_type": "investment", "reason": "agreement", "hard_flags": [], "samples": [["scam", 0.99, "investment"], ["scam", 0.99, "investment"]]}
 {"id": "H011", "label": "scam", "lang": "hi-Latn", "verdict": "scam", "scam_type": "investment", "reason": "agreement", "hard_flags": [], "samples": [["scam", 0.99, "investment"], ["scam", 0.99, "investment"]]}
-{"id": "H012", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "digital_arrest", "reason": "hard_flag", "hard_flags": ["safe_account"], "samples": [["scam", 0.99, "investment"]]}
+{"id": "H012", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "investment", "reason": "hard_flag", "hard_flags": ["safe_account"], "samples": [["scam", 0.99, "investment"]]}
 {"id": "H013", "label": "scam", "lang": "hi", "verdict": "scam", "scam_type": "investment", "reason": "hard_flag", "hard_flags": ["task_scam"], "samples": [["scam", 0.99, "investment"]]}
 {"id": "H014", "label": "scam", "lang": "bn", "verdict": "scam", "scam_type": "investment", "reason": "agreement", "hard_flags": [], "samples": [["scam", 0.99, "investment"], ["scam", 0.99, "investment"]]}
 {"id": "H015", "label": "scam", "lang": "en", "verdict": "scam", "scam_type": "investment", "reason": "hard_flag", "hard_flags": ["task_scam"], "samples": [["scam", 0.99, "investment"]]}
@@ -179,22 +179,22 @@
 {"id": "H179", "label": "genuine", "lang": "bn", "verdict": "no_signs", "scam_type": null, "reason": "agreement", "hard_flags": [], "samples": [["genuine", 0.95, "none"], ["genuine", 0.95, "none"]]}
 {"id": "H180", "label": "genuine", "lang": "hi", "verdict": "no_signs", "scam_type": null, "reason": "agreement", "hard_flags": [], "samples": [["genuine", 0.95, "none"], ["genuine", 0.95, "none"]]}
 {"id": "H181", "label": "ambiguous", "lang": "en", "verdict": "unsure", "scam_type": null, "reason": "model_unsure", "hard_flags": [], "samples": [["unsure", 0.6, "other"], ["unsure", 0.6, "other"]]}
-{"id": "H182", "label": "ambiguous", "lang": "hi-Latn", "verdict": "scam", "scam_type": "family_emergency", "reason": "agreement", "hard_flags": [], "samples": [["scam", 0.95, "family_emergency"], ["scam", 0.95, "family_emergency"]]}
+{"id": "H182", "label": "ambiguous", "lang": "hi-Latn", "verdict": "unsure", "scam_type": null, "reason": "no_risky_ask", "hard_flags": [], "samples": [["scam", 0.95, "family_emergency"], ["scam", 0.95, "family_emergency"]]}
 {"id": "H183", "label": "ambiguous", "lang": "bn", "verdict": "unsure", "scam_type": null, "reason": "model_unsure", "hard_flags": [], "samples": [["unsure", 0.6, "other"], ["unsure", 0.6, "other"]]}
 {"id": "H184", "label": "ambiguous", "lang": "en", "verdict": "scam", "scam_type": "bank_kyc", "reason": "agreement", "hard_flags": [], "samples": [["scam", 0.9, "bank_kyc"], ["scam", 0.9, "bank_kyc"]]}
 {"id": "H185", "label": "ambiguous", "lang": "hi", "verdict": "unsure", "scam_type": null, "reason": "model_unsure", "hard_flags": [], "samples": [["unsure", 0.7, "other"], ["unsure", 0.7, "other"]]}
-{"id": "H186", "label": "ambiguous", "lang": "bn-Latn", "verdict": "scam", "scam_type": "family_emergency", "reason": "agreement", "hard_flags": [], "samples": [["scam", 0.85, "family_emergency"], ["scam", 0.85, "family_emergency"]]}
+{"id": "H186", "label": "ambiguous", "lang": "bn-Latn", "verdict": "unsure", "scam_type": null, "reason": "no_risky_ask", "hard_flags": [], "samples": [["scam", 0.85, "family_emergency"], ["scam", 0.85, "family_emergency"]]}
 {"id": "H187", "label": "ambiguous", "lang": "en", "verdict": "unsure", "scam_type": null, "reason": "model_unsure", "hard_flags": [], "samples": [["unsure", 0.6, "other"], ["unsure", 0.6, "parcel"]]}
-{"id": "H188", "label": "ambiguous", "lang": "hi-Latn", "verdict": "scam", "scam_type": "bank_kyc", "reason": "agreement", "hard_flags": [], "samples": [["scam", 0.9, "bank_kyc"], ["scam", 0.9, "bank_kyc"]]}
+{"id": "H188", "label": "ambiguous", "lang": "hi-Latn", "verdict": "unsure", "scam_type": null, "reason": "no_risky_ask", "hard_flags": [], "samples": [["scam", 0.9, "bank_kyc"], ["scam", 0.9, "bank_kyc"]]}
 {"id": "H189", "label": "ambiguous", "lang": "bn", "verdict": "unsure", "scam_type": null, "reason": "model_unsure", "hard_flags": [], "samples": [["unsure", 0.6, "other"], ["unsure", 0.5, "other"]]}
 {"id": "H190", "label": "ambiguous", "lang": "en", "verdict": "no_signs", "scam_type": null, "reason": "agreement", "hard_flags": [], "samples": [["genuine", 0.85, "none"], ["genuine", 0.9, "none"]]}
-{"id": "H191", "label": "ambiguous", "lang": "hi", "verdict": "scam", "scam_type": "digital_arrest", "reason": "agreement", "hard_flags": [], "samples": [["scam", 0.95, "digital_arrest"], ["scam", 0.95, "digital_arrest"]]}
+{"id": "H191", "label": "ambiguous", "lang": "hi", "verdict": "unsure", "scam_type": null, "reason": "no_risky_ask", "hard_flags": [], "samples": [["scam", 0.95, "digital_arrest"], ["scam", 0.95, "digital_arrest"]]}
 {"id": "H192", "label": "ambiguous", "lang": "en", "verdict": "unsure", "scam_type": null, "reason": "model_unsure", "hard_flags": [], "samples": [["unsure", 0.6, "other"], ["unsure", 0.6, "fake_payment"]]}
 {"id": "H193", "label": "ambiguous", "lang": "bn", "verdict": "unsure", "scam_type": null, "reason": "model_unsure", "hard_flags": [], "samples": [["unsure", 0.6, "other"], ["unsure", 0.6, "other"]]}
 {"id": "H194", "label": "ambiguous", "lang": "hi-Latn", "verdict": "unsure", "scam_type": null, "reason": "model_unsure", "hard_flags": [], "samples": [["unsure", 0.6, "other"], ["unsure", 0.6, "other"]]}
 {"id": "H195", "label": "ambiguous", "lang": "en", "verdict": "unsure", "scam_type": null, "reason": "model_unsure", "hard_flags": [], "samples": [["unsure", 0.6, "other"], ["unsure", 0.6, "other"]]}
 {"id": "H196", "label": "ambiguous", "lang": "hi", "verdict": "no_signs", "scam_type": null, "reason": "agreement", "hard_flags": [], "samples": [["genuine", 0.85, "none"], ["genuine", 0.9, "none"]]}
-{"id": "H197", "label": "ambiguous", "lang": "bn-Latn", "verdict": "scam", "scam_type": "investment", "reason": "hard_flag", "hard_flags": ["guaranteed_returns"], "samples": [["unsure", 0.6, "other"]]}
+{"id": "H197", "label": "ambiguous", "lang": "bn-Latn", "verdict": "unsure", "scam_type": null, "reason": "model_unsure", "hard_flags": [], "samples": [["unsure", 0.6, "other"]]}
 {"id": "H198", "label": "ambiguous", "lang": "en", "verdict": "unsure", "scam_type": null, "reason": "model_unsure", "hard_flags": [], "samples": [["unsure", 0.7, "fake_job"], ["unsure", 0.6, "fake_job"]]}
 {"id": "H199", "label": "ambiguous", "lang": "hi", "verdict": "no_signs", "scam_type": null, "reason": "agreement", "hard_flags": [], "samples": [["genuine", 0.9, "none"], ["genuine", 0.9, "none"]]}
-{"id": "H200", "label": "ambiguous", "lang": "bn", "verdict": "scam", "scam_type": "bank_kyc", "reason": "agreement", "hard_flags": [], "samples": [["scam", 0.95, "bank_kyc"], ["scam", 0.95, "bank_kyc"]]}
+{"id": "H200", "label": "ambiguous", "lang": "bn", "verdict": "unsure", "scam_type": null, "reason": "no_risky_ask", "hard_flags": [], "samples": [["scam", 0.95, "bank_kyc"], ["scam", 0.95, "bank_kyc"]]}
