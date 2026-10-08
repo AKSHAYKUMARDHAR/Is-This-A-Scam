@@ -121,7 +121,7 @@ def ui_rows():
         add("already paid", str(i + 1), {k: advice.URGENT_STEPS[k][i] for k in advice.URGENT_STEPS})
     for code, d in advice.FLAG_WHY.items():
         add("red flag", code, d)
-    for name in ("DISCLAIMER", "TOO_SHORT", "NO_ASK", "SCREENSHOT_NOTE"):
+    for name in ("DISCLAIMER", "TOO_SHORT", "NO_ASK", "RULES_ONLY", "SCREENSHOT_NOTE"):
         add("card note", name.lower(), getattr(advice, name))
     try:   # interface text lives in web/i18n.js
         js = "global.window={};require(process.argv[1]);process.stdout.write(JSON.stringify(window.I18N))"
