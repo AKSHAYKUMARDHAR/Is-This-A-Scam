@@ -20,7 +20,9 @@ import json
 import os
 import pathlib
 import uuid
+from contextlib import asynccontextmanager
 
+import httpx
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -39,7 +41,27 @@ from .store import FEEDBACK_EVENTS, hash_id, make_store
 WEB = pathlib.Path(__file__).resolve().parent.parent / "web"
 CALL_FIELDS = {"claimed", "asked", "threat", "video_or_secret", "safe_account", "details"}
 
-app = FastAPI(title="Is This a Scam?", docs_url="/api/docs", openapi_url="/api/openapi.json")
+async def keep_awake(url: str, every_s: float, transport: httpx.AsyncBaseTransport | None = None) -> None:
+    """Ping our own /healthz through the public URL, so the free host never sees 15 idle minutes.
+    /healthz never calls the model, so this costs no quota."""
+    async with httpx.AsyncClient(timeout=30, transport=transport) as client:
+        while True:
+            await asyncio.sleep(every_s)
+            try:
+                await client.get(f"{url}/healthz")
+            except httpx.HTTPError:
+                pass
+
+
+@asynccontextmanager
+async def lifespan(_app):
+    task = asyncio.create_task(keep_awake(config.KEEP_AWAKE_URL, 60 * config.KEEP_AWAKE_MINUTES)) if config.KEEP_AWAKE_URL else None
+    yield
+    if task:
+        task.cancel()
+
+
+app = FastAPI(title="Is This a Scam?", docs_url="/api/docs", openapi_url="/api/openapi.json", lifespan=lifespan)
 provider = get_provider()
 store = make_store(config.DATABASE_URL, config.LOG_PATH)
 link_checker = SafeBrowsing(config.SAFE_BROWSING_API_KEY) if config.SAFE_BROWSING_API_KEY else None
@@ -165,8 +187,9 @@ async def stats(x_stats_token: str | None = Header(None)):
 
 @app.get("/healthz")
 async def healthz():
-    return {"ok": True, "model": getattr(provider, "model", None),
-            "event_store": "postgres" if config.DATABASE_URL else "file", "safe_browsing": link_checker is not None}
+    return {"ok": True, "model": getattr(provider, "model", None), "commit": os.getenv("RENDER_GIT_COMMIT", "")[:7] or None,
+            "event_store": "postgres" if config.DATABASE_URL else "file", "safe_browsing": link_checker is not None,
+            "keep_awake": bool(config.KEEP_AWAKE_URL)}
 
 
 @app.get("/")

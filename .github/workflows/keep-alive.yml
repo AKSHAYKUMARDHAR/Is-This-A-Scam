@@ -1,6 +1,8 @@
-# Keeps the free Render instance awake: Render sleeps a free web service after 15 minutes
-# without traffic, and the first visit after that takes about a minute. /healthz never calls
-# the model, so these pings cost no Gemini quota. GitHub may delay scheduled runs at busy times.
+# Backup wake-up for the free Render instance. The app keeps itself awake by pinging its own public
+# URL every 10 minutes (KEEP_AWAKE in checker/config.py); this workflow only matters if the instance
+# has fallen asleep anyway, e.g. after a restart. GitHub runs scheduled workflows on a best-effort
+# basis and often skips them, which is why it is not the main mechanism. /healthz never calls the
+# model, so pings cost no Gemini quota.
 name: keep-alive
 on:
   schedule:

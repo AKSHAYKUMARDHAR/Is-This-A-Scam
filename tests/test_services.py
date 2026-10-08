@@ -57,3 +57,35 @@ def test_event_store_choice_and_database_fallback(tmp_path):
     store.append({"type": "check", "verdict": "scam", "check_id": "c1"})     # database unreachable: goes to the file
     assert [e["check_id"] for e in store.events()] == ["c1"]
     assert store.stats()["overall"]["checks"] == 1
+
+
+def test_keep_awake_pings_own_healthz():
+    from api.main import keep_awake
+
+    hits = []
+
+    def handler(request):
+        hits.append(str(request.url))
+        return httpx.Response(200, json={"ok": True})
+
+    async def run():
+        task = asyncio.create_task(keep_awake("https://example.onrender.com", 0.01, httpx.MockTransport(handler)))
+        await asyncio.sleep(0.1)
+        task.cancel()
+
+    asyncio.run(run())
+    assert len(hits) >= 2 and all(h == "https://example.onrender.com/healthz" for h in hits)
+
+
+def test_keep_awake_setting(monkeypatch):
+    import importlib
+
+    import checker.config as cfg
+    monkeypatch.setenv("RENDER_EXTERNAL_URL", "https://x.onrender.com/")
+    monkeypatch.setenv("KEEP_AWAKE", "auto")
+    assert importlib.reload(cfg).KEEP_AWAKE_URL == "https://x.onrender.com"
+    monkeypatch.setenv("KEEP_AWAKE", "off")
+    assert importlib.reload(cfg).KEEP_AWAKE_URL == ""
+    monkeypatch.delenv("RENDER_EXTERNAL_URL")
+    monkeypatch.setenv("KEEP_AWAKE", "auto")
+    assert importlib.reload(cfg).KEEP_AWAKE_URL == ""

@@ -35,3 +35,10 @@ LOG_PATH = os.getenv("LOG_PATH", "data/logs/events.jsonl")
 # Optional services, each off unless its setting is present
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()                  # Postgres for the event log (survives redeploys)
 SAFE_BROWSING_API_KEY = os.getenv("SAFE_BROWSING_API_KEY", "").strip()  # Google Safe Browsing link check
+
+# Keep a free Render instance awake: it sleeps after 15 minutes without inbound traffic, and a request
+# to its own public URL counts. "auto" = on when Render sets RENDER_EXTERNAL_URL; "off" = never; a URL = ping that.
+_KEEP = os.getenv("KEEP_AWAKE", "auto").strip()
+KEEP_AWAKE_URL = (os.getenv("RENDER_EXTERNAL_URL", "") if _KEEP.lower() == "auto"
+                  else "" if _KEEP.lower() in ("off", "0", "false", "no") else _KEEP).strip().rstrip("/")
+KEEP_AWAKE_MINUTES = _float("KEEP_AWAKE_MINUTES", "10")
